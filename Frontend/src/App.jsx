@@ -9,6 +9,7 @@ import { setCurrentUser, setCheckingAuth } from "./features/usersSlice";
 import apiRequest from "./utils/apiRequest";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
+import AddRestaurantForm from "./pages/AddRestaurantForm";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,11 +35,10 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
 
-    
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/add-restaurant" element={<AddRestaurantForm />} />
         </Route>
-        
       </Routes>
     </>
   );

@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const createRestaurant = asyncHandler(async (req, res) => {
-  const { name, address: addressRaw } = req.body;
+  const { name, address: addressRaw  } = req.body;
 
   if (!name?.trim()) {
     throw new ApiError(400, "Restaurant name is required");
