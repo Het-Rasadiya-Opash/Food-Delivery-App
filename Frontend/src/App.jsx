@@ -10,6 +10,7 @@ import apiRequest from "./utils/apiRequest";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import AddRestaurantForm from "./pages/AddRestaurantForm";
+import EditRestaurantForm from "./pages/EditRestaurantForm";
 import RestaurantDetails from "./components/RestaurantDetails";
 
 const App = () => {
@@ -40,6 +41,7 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-restaurant" element={<AddRestaurantForm />} />
+          <Route path="/edit-restaurant" element={<EditRestaurantForm />} />
         </Route>
       </Routes>
     </>

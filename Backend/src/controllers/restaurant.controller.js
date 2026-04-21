@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const createRestaurant = asyncHandler(async (req, res) => {
-  const { name, address: addressRaw } = req.body;
+  const { name, address: addressRaw, isOpen, rating } = req.body;
 
   if (!name?.trim()) {
     throw new ApiError(400, "Restaurant name is required");
@@ -42,6 +42,8 @@ export const createRestaurant = asyncHandler(async (req, res) => {
     owner: req.user._id,
     images: imageUrls,
     address,
+    isOpen,
+    rating
   });
 
   return res
@@ -67,4 +69,81 @@ export const getRestaurantById = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(new ApiResponse(201, restaurant, "Restaurant fetch successfully"));
+});
+
+export const getOwnerRestaurant = asyncHandler(async (req, res) => {
+  const ownerId = req.user._id;
+  const ownerRestaurant = await restaurantModel.findOne({ owner: ownerId });
+ 
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(201, ownerRestaurant, "Restaurant fetch successfully"),
+    );
+});
+
+export const editRestaurant = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+
+  const restaurant = await restaurantModel.findById(restaurantId);
+  if (!restaurant) {
+    throw new ApiError(404, "Restaurant not found");
+  }
+
+  if (restaurant.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to edit this restaurant");
+  }
+
+  const { name, address: addressRaw, isOpen, rating } = req.body;
+
+  let address;
+  try {
+    address = addressRaw ? JSON.parse(addressRaw) : {};
+  } catch {
+    throw new ApiError(
+      400,
+      "Invalid address format. Send address as a JSON string",
+    );
+  }
+
+  const imageFiles = req.files || [];
+  if (imageFiles.length > 0) {
+    const uploadedImages = await Promise.all(
+      imageFiles.map((file) => uploadOnCloudinary(file.path)),
+    );
+    const newImageUrls = uploadedImages
+      .filter((res) => res !== null)
+      .map((res) => res.secure_url);
+    restaurant.images = [...restaurant.images, ...newImageUrls];
+  }
+
+  if (name) restaurant.name = name;
+  if (address) restaurant.address = address;
+  if (isOpen !== undefined) restaurant.isOpen = isOpen;
+  if (rating !== undefined) restaurant.rating = rating;
+
+  await restaurant.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, restaurant, "Restaurant updated successfully"));
+});
+
+export const deleteRestaurant = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+
+  const restaurant = await restaurantModel.findById(restaurantId);
+  if (!restaurant) {
+    throw new ApiError(404, "Restaurant not found");
+  }
+
+  if (restaurant.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this restaurant");
+  }
+
+  await restaurant.deleteOne();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Restaurant deleted successfully"));
 });

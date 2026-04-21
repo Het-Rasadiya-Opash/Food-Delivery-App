@@ -8,22 +8,22 @@ import {
   setRestaurantError,
 } from "../features/restaurantSlice";
 
-const AddRestaurantForm = () => {
+const EditRestaurantForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.restaurant);
+  const { restaurant, loading, error } = useSelector((state) => state.restaurant);
 
   const [formData, setFormData] = useState({
-    name: "",
-    street: "",
-    city: "",
-    state: "",
-    zip: "",
-    lat: "",
-    lng: "",
+    name: restaurant?.name || "",
+    street: restaurant?.address?.street || "",
+    city: restaurant?.address?.city || "",
+    state: restaurant?.address?.state || "",
+    zip: restaurant?.address?.zip || "",
+    lat: restaurant?.address?.location?.coordinates?.[1] || "",
+    lng: restaurant?.address?.location?.coordinates?.[0] || "",
+    isOpen: restaurant?.isOpen ?? true,
+    rating: restaurant?.rating || 0,
     images: [],
-    isOpen: true,
-    rating: 0,
   });
 
   const handleChange = (e) => {
@@ -60,11 +60,11 @@ const AddRestaurantForm = () => {
         data.append("images", file);
       });
 
-      const res = await apiRequest.post("/restaurants/create", data);
+      const res = await apiRequest.put(`/restaurants/${restaurant._id}`, data);
       dispatch(setRestaurant(res.data.data));
-      navigate("/");
+      navigate("/profile");
     } catch (err) {
-      dispatch(setRestaurantError(err.response?.data?.message || "Failed to create restaurant"));
+      dispatch(setRestaurantError(err.response?.data?.message || "Failed to update restaurant"));
     }
   };
 
@@ -74,7 +74,11 @@ const AddRestaurantForm = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-xl space-y-5"
       >
-        <h2 className="text-2xl font-bold text-gray-800">Add New Restaurant</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Edit Restaurant</h2>
+
+        {error && (
+          <div className="text-sm text-red-500 bg-red-100 p-2 rounded">{error}</div>
+        )}
 
         <input
           type="text"
@@ -151,19 +155,17 @@ const AddRestaurantForm = () => {
               className="w-5 h-5 accent-indigo-600"
             />
           </div>
-          <div>
-            <input
-              type="number"
-              name="rating"
-              placeholder="Rating (0-5)"
-              value={formData.rating}
-              min={0}
-              max={5}
-              step={0.1}
-              onChange={handleChange}
-              className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+          <input
+            type="number"
+            name="rating"
+            placeholder="Rating (0-5)"
+            value={formData.rating}
+            min={0}
+            max={5}
+            step={0.1}
+            onChange={handleChange}
+            className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
         </div>
 
         <input
@@ -173,16 +175,25 @@ const AddRestaurantForm = () => {
           className="w-full"
         />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition"
-        >
-          {loading ? "Creating..." : "Create Restaurant"}
-        </button>
+        <div className="flex gap-4">
+          <button
+            type="button"
+            onClick={() => navigate("/owner-restaurant")}
+            className="w-full py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition disabled:opacity-50"
+          >
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
-export default AddRestaurantForm;
+export default EditRestaurantForm;

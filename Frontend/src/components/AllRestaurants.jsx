@@ -1,27 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import apiRequest from "../utils/apiRequest";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setRestaurants,
+  setRestaurantLoading,
+  setRestaurantError,
+} from "../features/restaurantSlice";
 
 const AllRestaurants = () => {
-  const [restaurants, setRestaurants] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { restaurants, loading, error } = useSelector((state) => state.restaurant);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllRestaurants = async () => {
       try {
-        setLoading(true);
+        dispatch(setRestaurantLoading(true));
         const response = await apiRequest.get("/restaurants");
-        setRestaurants(response.data.data);
+        dispatch(setRestaurants(response.data.data));
       } catch (err) {
-        setError("Failed to load restaurants");
-      } finally {
-        setLoading(false);
+        dispatch(setRestaurantError("Failed to load restaurants"));
       }
     };
     fetchAllRestaurants();
-  }, []);
+  }, [dispatch]);
 
   if (loading) {
     return (
