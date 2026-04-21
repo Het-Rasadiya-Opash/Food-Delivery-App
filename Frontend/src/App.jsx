@@ -10,6 +10,7 @@ import apiRequest from "./utils/apiRequest";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import AddRestaurantForm from "./pages/AddRestaurantForm";
+import RestaurantDetails from "./components/RestaurantDetails";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/restaurants/:restaurantId" element={<RestaurantDetails />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
 

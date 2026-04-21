@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const createRestaurant = asyncHandler(async (req, res) => {
-  const { name, address: addressRaw  } = req.body;
+  const { name, address: addressRaw } = req.body;
 
   if (!name?.trim()) {
     throw new ApiError(400, "Restaurant name is required");
@@ -15,7 +15,10 @@ export const createRestaurant = asyncHandler(async (req, res) => {
   try {
     address = addressRaw ? JSON.parse(addressRaw) : {};
   } catch {
-    throw new ApiError(400, "Invalid address format. Send address as a JSON string");
+    throw new ApiError(
+      400,
+      "Invalid address format. Send address as a JSON string",
+    );
   }
 
   const existingRestaurant = await restaurantModel.findOne({
@@ -50,5 +53,18 @@ export const getAllRestaurants = asyncHandler(async (req, res) => {
   const restaurants = await restaurantModel.find();
   return res
     .status(201)
-    .json(new ApiResponse(201, restaurants, "Restaurant fetch successfully"));
+    .json(new ApiResponse(201, restaurants, "Restaurants fetch successfully"));
+});
+
+export const getRestaurantById = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+  const restaurant = await restaurantModel
+    .findById(restaurantId)
+    .populate("owner", "username");
+  if (!restaurant) {
+    throw new ApiError(400, "Restaurant not found for restaurantId ");
+  }
+  return res
+    .status(201)
+    .json(new ApiResponse(201, restaurant, "Restaurant fetch successfully"));
 });

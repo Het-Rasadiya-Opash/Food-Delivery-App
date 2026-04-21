@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import apiRequest from "../utils/apiRequest";
+import { useNavigate } from "react-router-dom";
 
 const AllRestaurants = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllRestaurants = async () => {
@@ -39,13 +41,12 @@ const AllRestaurants = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        All Restaurants
-      </h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">All Restaurants</h1>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {restaurants.map((res) => (
           <div
+            onClick={() => navigate(`/restaurants/${res._id}`)}
             key={res._id}
             className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300"
           >

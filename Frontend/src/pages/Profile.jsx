@@ -36,13 +36,15 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
-          <Link to='/add-restaurant'>
-            <button className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition duration-300">
-              Add Restaurants
-            </button>
-          </Link>
-        </div>
+        {currentUser.role === "Restaurant Manager" && (
+          <div className="mt-6 flex justify-end">
+            <Link to="/add-restaurant">
+              <button className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition duration-300">
+                Add Restaurants
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
