@@ -23,6 +23,16 @@ const userSchema = new mongoose.Schema(
       enum: ["Customer", "Restaurant Manager", "Driver"],
       default: "Customer",
     },
+    address: {
+      street: String,
+      city: String,
+      state: String,
+      zip: String,
+      location: {
+        type: { type: String, enum: ["Point"], default: "Point" },
+        coordinates: { type: [Number] },
+      },
+    },
   },
   {
     timestamps: true,
