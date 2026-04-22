@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import apiRequest from "../utils/apiRequest";
 import {
-  updateMenuItem,
-  setMenuItemError,
-  setMenuItemLoading,
-} from "../features/menuItemSlice";
-import {
+  AlertCircle,
   Edit3,
-  Tag,
-  DollarSign,
   FileText,
   Image as ImageIcon,
-  AlertCircle,
+  IndianRupee,
+  Tag
 } from "lucide-react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  setMenuItemError,
+  setMenuItemLoading,
+  updateMenuItem,
+} from "../features/menuItemSlice";
+import apiRequest from "../utils/apiRequest";
 
 const EditMenuItem = () => {
   const { menuId } = useParams();
@@ -136,7 +136,7 @@ const EditMenuItem = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-orange-500 transition-colors">
-                  <DollarSign size={20} />
+                  <IndianRupee size={20} />
                 </div>
                 <input
                   type="number"

@@ -9,7 +9,16 @@ import {
   removeMenuItem,
 } from "../features/menuItemSlice";
 import { addToCart } from "../features/cartSlice";
-import { Plus, Edit2, Trash2, UtensilsCrossed } from "lucide-react";
+import { 
+  Plus, 
+  Edit2, 
+  Trash2, 
+  UtensilsCrossed, 
+  ShoppingBag,
+  Info,
+  ChevronRight,
+  Clock
+} from "lucide-react";
 
 const AllMenuItems = () => {
   const dispatch = useDispatch();
@@ -77,26 +86,38 @@ const AllMenuItems = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="flex items-center justify-center py-24">
+        <div className="relative h-16 w-16">
+          <div className="absolute inset-0 rounded-full border-4 border-gray-100 border-t-orange-500 animate-spin"></div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-red-500">
-        <UtensilsCrossed size={48} className="mb-4 opacity-50" />
-        <p className="text-lg font-medium">{error}</p>
+      <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+        <Info size={40} className="text-red-400 mb-4" />
+        <p className="text-gray-900 font-bold text-lg mb-1">{error}</p>
+        <p className="text-gray-500 text-sm">Please refresh or try again later.</p>
       </div>
     );
   }
 
   if (!menuItems?.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-        <UtensilsCrossed size={48} className="mb-4 opacity-50" />
-        <p className="text-lg">No menu items found</p>
+      <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+        <UtensilsCrossed size={48} className="text-gray-200 mb-4" />
+        <p className="text-gray-900 font-bold text-xl mb-2">Menu is empty</p>
+        <p className="text-gray-500 max-w-xs mb-8">This restaurant hasn't listed any items yet.</p>
+        {isOwner && (
+          <button 
+            onClick={() => navigate("/add-menuItem")}
+            className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95"
+          >
+            Add Menu Item
+          </button>
+        )}
       </div>
     );
   }
@@ -109,79 +130,98 @@ const AllMenuItems = () => {
   }, {});
 
   return (
-    <div className="bg-white px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
       {Object.entries(grouped).map(([category, items]) => (
-        <div key={category} className="mb-12 last:mb-0">
-          <div className="flex items-center gap-4 mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{category}</h2>
-            <div className="flex-1 h-px bg-gray-100"></div>
+        <div key={category} className="space-y-8">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">{category}</h2>
+            <div className="flex-1 h-[2px] bg-gray-50"></div>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-2">
             {items.map((item) => (
               <div
                 key={item._id}
-                className="group flex bg-white rounded-2xl border border-gray-100 hover:border-orange-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+                className="group flex bg-white rounded-3xl border border-gray-100 p-4 hover:border-orange-200 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 relative overflow-hidden"
               >
-                <div className="w-1/3 relative overflow-hidden">
+                {/* Left: Image Container */}
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 shrink-0 rounded-2xl overflow-hidden">
                   <img
                     src={
                       item.image ||
                       "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
                     }
                     alt={item.name}
-                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {!item.isAvailable && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center">
-                      <span className="bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex items-center justify-center">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 px-2 py-1 bg-white rounded-full shadow-sm">
                         Out of Stock
                       </span>
                     </div>
                   )}
                 </div>
 
-                <div className="w-2/3 p-4 flex flex-col justify-between">
+                {/* Right: Content Container */}
+                <div className="ml-4 sm:ml-6 flex-1 flex flex-col justify-between py-1">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">
-                      {item.name}
-                    </h3>
-                    <p className="text-gray-500 text-xs mb-3 line-clamp-2 leading-relaxed">
-                      {item.description}
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="text-lg sm:text-xl font-extrabold text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">
+                        {item.name}
+                      </h3>
+                      <span className="text-lg font-black text-gray-900 ml-4 shrink-0">
+                        ₹{item.price}
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-xs sm:text-sm line-clamp-2 leading-relaxed max-w-md">
+                      {item.description || "Freshly prepared with authentic ingredients and flavors."}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-orange-600 font-bold text-lg">
-                      ₹{item.price}
-                    </span>
-                    {item.isAvailable && (
-                      <button
-                        onClick={() => handleAddToCart(item)}
-                        className="flex items-center justify-center w-8 h-8 bg-orange-100 text-orange-600 hover:bg-orange-500 hover:text-white rounded-full transition-colors active:scale-95"
-                      >
-                        <Plus size={18} />
-                      </button>
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center gap-4">
+                      {item.isAvailable ? (
+                        <button
+                          onClick={() => handleAddToCart(item)}
+                          className="flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-xl font-bold hover:bg-orange-500 hover:text-white transition-all active:scale-95 group/btn"
+                        >
+                          <Plus size={18} className="group-hover/btn:rotate-90 transition-transform" />
+                          <span className="text-sm">Add</span>
+                        </button>
+                      ) : (
+                        <span className="text-xs font-bold text-gray-400 italic">Unavailable</span>
+                      )}
+                      
+                      <div className="hidden sm:flex items-center gap-1.5 text-gray-400">
+                        <Clock size={14} />
+                        <span className="text-[10px] font-bold uppercase tracking-tight">15 MINS</span>
+                      </div>
+                    </div>
+
+                    {isOwner && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => navigate(`/edit-menuItem/${item._id}`)}
+                          className="p-2.5 bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-xl transition-all"
+                          title="Edit"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMenu(item._id)}
+                          className="p-2.5 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     )}
                   </div>
-
-                  {isOwner && (
-                    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                      <button
-                        onClick={() => navigate(`/edit-menuItem/${item._id}`)}
-                        className="flex items-center justify-center gap-1 flex-1 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors text-xs font-medium"
-                      >
-                        <Edit2 size={14} /> Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMenu(item._id)}
-                        className="flex items-center justify-center gap-1 flex-1 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-lg transition-colors text-xs font-medium"
-                      >
-                        <Trash2 size={14} /> Delete
-                      </button>
-                    </div>
-                  )}
                 </div>
+
+                {/* Subtle Hover Element */}
+                <div className="absolute right-0 top-0 h-full w-1 bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
             ))}
           </div>
