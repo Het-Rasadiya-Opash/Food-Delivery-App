@@ -25,12 +25,14 @@ const cartSlice = createSlice({
       state.restaurantId = restaurantId;
       state.restaurantName = restaurantName;
 
+      ///same item add to cart -> +1 quantity  
       const existing = state.items.find(
         (i) => i.menuItemId === item.menuItemId,
       );
       if (existing) {
         existing.quantity += 1;
       } else {
+        // new item add in cart
         state.items.push({ ...item, quantity: 1 });
       }
     },
