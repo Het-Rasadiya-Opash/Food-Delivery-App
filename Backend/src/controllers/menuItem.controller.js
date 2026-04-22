@@ -55,3 +55,46 @@ export const getAllMenusForRestaurants = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(201, menuItems, "Menu item fetch successfully"));
 });
+
+export const editMenu = asyncHandler(async (req, res) => {
+  const { menuId } = req.params;
+
+  const menuItem = await menuItemModel.findById(menuId);
+  if (!menuItem) {
+    throw new ApiError(404, "Menu item not found");
+  }
+
+  const { name, description, price, category, isAvailable } = req.body;
+
+  if (name !== undefined) menuItem.name = name;
+  if (description !== undefined) menuItem.description = description;
+  if (price !== undefined) menuItem.price = price;
+  if (category !== undefined) menuItem.category = category;
+  if (isAvailable !== undefined) menuItem.isAvailable = isAvailable;
+
+  if (req.file) {
+    const uploadedImage = await uploadOnCloudinary(req.file.path);
+    if (uploadedImage?.secure_url) {
+      menuItem.image = uploadedImage.secure_url;
+    }
+  }
+
+  await menuItem.save();
+
+  res
+    .status(200)
+    .json(new ApiResponse(201, menuItem, "MenuItem Upated Successfully"));
+});
+
+export const deleteMenu = asyncHandler(async (req, res) => {
+  const { menuId } = req.params;
+
+  const menuItem = await menuItemModel.findById(menuId);
+  if (!menuItem) {
+    throw new ApiError(404, "Menu item not found");
+  }
+
+  await menuItem.deleteOne();
+
+  res.status(200).json(new ApiResponse(200, "MenuItem Deleted Successfully"));
+});
