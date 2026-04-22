@@ -9,14 +9,41 @@ import {
   setOrderError,
   setCancelError,
 } from "../features/orderSlice";
+import {
+  ShoppingBag,
+  Clock,
+  MapPin,
+  XCircle,
+  ChevronRight,
+  Store,
+  AlertCircle,
+} from "lucide-react";
 
-const STATUS_COLORS = {
-  PLACED: "bg-blue-100 text-blue-700",
-  ACCEPTED: "bg-yellow-100 text-yellow-700",
-  PREPARING: "bg-orange-100 text-orange-700",
-  OUT_FOR_DELIVERY: "bg-purple-100 text-purple-700",
-  DELIVERED: "bg-green-100 text-green-700",
-  CANCELLED: "bg-red-100 text-red-600",
+const STATUS_CONFIG = {
+  PLACED: {
+    color: "bg-blue-100 text-blue-700 border-blue-200",
+    icon: <Clock size={14} />,
+  },
+  ACCEPTED: {
+    color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    icon: <Clock size={14} />,
+  },
+  PREPARING: {
+    color: "bg-orange-100 text-orange-700 border-orange-200",
+    icon: <Store size={14} />,
+  },
+  OUT_FOR_DELIVERY: {
+    color: "bg-purple-100 text-purple-700 border-purple-200",
+    icon: <MapPin size={14} />,
+  },
+  DELIVERED: {
+    color: "bg-green-100 text-green-700 border-green-200",
+    icon: <ShoppingBag size={14} />,
+  },
+  CANCELLED: {
+    color: "bg-red-100 text-red-600 border-red-200",
+    icon: <XCircle size={14} />,
+  },
 };
 
 const MyOrders = () => {
@@ -44,6 +71,7 @@ const MyOrders = () => {
   }, [dispatch]);
 
   const handleCancel = async (orderId) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
     try {
       dispatch(setCancelError(null));
       const res = await apiRequest.patch(`/orders/${orderId}/cancel`, {
@@ -59,106 +87,169 @@ const MyOrders = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-10 h-10 border-4 border-red-500 border-dashed rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center min-h-[80vh] bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen text-red-500">
-        {error}
+      <div className="flex flex-col items-center justify-center min-h-[80vh] bg-gray-50 text-red-500 gap-4">
+        <AlertCircle size={48} className="opacity-50" />
+        <p className="text-lg font-medium">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">My Orders</h1>
-
-      {cancelError && (
-        <div className="mb-4 px-4 py-3 bg-red-100 text-red-600 rounded-lg text-sm">
-          {cancelError}
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="bg-orange-100 p-2.5 rounded-xl">
+            <ShoppingBag className="text-orange-600" size={24} />
+          </div>
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Order History
+          </h1>
         </div>
-      )}
 
-      {orders.length === 0 ? (
-        <div className="text-center text-gray-500 py-20">
-          <p className="text-lg mb-3">No orders yet</p>
-          <button
-            onClick={() => navigate("/")}
-            className="text-red-500 underline"
-          >
-            Browse Restaurants
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-5">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="bg-white rounded-2xl shadow-md p-5 space-y-4"
+        {cancelError && (
+          <div className="mb-6 px-4 py-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm flex items-center gap-2">
+            <AlertCircle size={16} />
+            {cancelError}
+          </div>
+        )}
+
+        {orders.length === 0 ? (
+          <div className="text-center bg-white rounded-3xl shadow-sm border border-gray-100 py-20 px-4">
+            <div className="bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingBag size={40} className="text-gray-300" />
+            </div>
+            <p className="text-xl font-bold text-gray-900 mb-2">
+              No orders yet
+            </p>
+            <p className="text-gray-500 mb-6">
+              When you place orders, they will appear here.
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="px-6 py-2.5 bg-orange-600 text-white font-medium rounded-xl hover:bg-orange-700 transition shadow-sm inline-flex items-center gap-2 group"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-bold text-gray-800 text-lg">
-                    {order.restaurant?.name}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(order.createdAt).toLocaleString()}
-                  </p>
-                </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[order.status]}`}
-                >
-                  {order.status.replace("_", " ")}
-                </span>
-              </div>
+              Start Ordering
+              <ChevronRight
+                size={16}
+                className="group-hover:translate-x-1 transition-transform"
+              />
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((order) => {
+              const statusConfig =
+                STATUS_CONFIG[order.status] || STATUS_CONFIG.PLACED;
 
-              <div className="space-y-2">
-                {order.items.map((item) => (
-                  <div
-                    key={item.menuItemId}
-                    className="flex items-center gap-3"
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-10 h-10 rounded-lg object-cover"
-                    />
-                    <span className="text-sm text-gray-700 flex-1">
-                      {item.name}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      x{item.quantity}
-                    </span>
-                    <span className="text-sm font-semibold text-red-500">
-                      ₹{(item.price * item.quantity).toFixed(2)}
+              return (
+                <div
+                  key={order._id}
+                  className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <p className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                        <Store size={18} className="text-orange-500" />
+                        {order.restaurant?.name || "Unknown Restaurant"}
+                      </p>
+                      <p className="text-xs font-medium text-gray-500 mt-1 flex items-center gap-1.5">
+                        <Clock size={12} />
+                        {new Date(order.createdAt).toLocaleString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border uppercase tracking-wide ${statusConfig.color}`}
+                    >
+                      {statusConfig.icon}
+                      {order.status.replace(/_/g, " ")}
                     </span>
                   </div>
-                ))}
-              </div>
 
-              <div className="flex items-center justify-between border-t pt-3">
-                <span className="font-bold text-gray-800">
-                  Total: ₹{order.totalPrice.toFixed(2)}
-                </span>
-                <div className="flex gap-2">
-                  {["PLACED", "ACCEPTED"].includes(order.status) && (
-                    <button
-                      onClick={() => handleCancel(order._id)}
-                      className="px-4 py-1 bg-red-100 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-200 transition"
-                    >
-                      Cancel
-                    </button>
-                  )}
+                  {/* Order Items */}
+                  <div className="p-6 space-y-4">
+                    {order.items.map((item) => (
+                      <div
+                        key={item.menuItemId}
+                        className="flex items-center gap-4 group"
+                      >
+                        <img
+                          src={
+                            item.image ||
+                            "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                          }
+                          alt={item.name}
+                          className="w-16 h-16 rounded-xl object-cover border border-gray-100 group-hover:scale-105 transition-transform"
+                        />
+                        <div className="flex-1">
+                          <p className="font-bold text-gray-900 line-clamp-1">
+                            {item.name}
+                          </p>
+                          <p className="text-sm font-medium text-gray-500 mt-0.5">
+                            Qty:{" "}
+                            <span className="text-gray-900 bg-gray-100 px-2 rounded-md">
+                              {item.quantity}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-sm font-bold text-gray-900">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="px-6 py-4 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex flex-col">
+                      <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
+                        Total Amount
+                      </span>
+                      <span className="font-extrabold text-gray-900 text-xl">
+                        ₹{order.totalPrice.toFixed(2)}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-3 w-full sm:w-auto">
+                      {["PLACED", "ACCEPTED"].includes(order.status) && (
+                        <button
+                          onClick={() => handleCancel(order._id)}
+                          className="w-full sm:w-auto px-5 py-2.5 bg-white border border-red-200 text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 hover:border-red-300 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <XCircle size={16} /> Cancel Order
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() =>
+                          navigate(`/restaurants/${order.restaurant?._id}`)
+                        }
+                        className="w-full sm:w-auto px-5 py-2.5 bg-orange-100 text-orange-700 rounded-xl text-sm font-bold hover:bg-orange-200 transition-colors flex items-center justify-center"
+                      >
+                        Order Again
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

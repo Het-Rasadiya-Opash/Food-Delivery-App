@@ -17,6 +17,7 @@ import EditMenuItem from "./pages/EditMenuItem";
 import PlaceOrder from "./pages/PlaceOrder";
 import MyOrders from "./pages/MyOrders";
 import RestaurantOrderQueue from "./pages/RestaurantOrderQueue";
+import Footer from "./components/Footer";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,6 @@ const App = () => {
     const checkAuth = async () => {
       try {
         const response = await apiRequest.get("/users");
-
         dispatch(setCurrentUser(response.data.data));
       } catch (err) {
         dispatch(setCheckingAuth(false));
@@ -35,32 +35,39 @@ const App = () => {
   }, [dispatch]);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-900">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/restaurants/:restaurantId"
-          element={<RestaurantDetails />}
-        />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<Register />} />
-
-        <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/add-restaurant" element={<AddRestaurantForm />} />
-          <Route path="/edit-restaurant" element={<EditRestaurantForm />} />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
           <Route
-            path="/add-new-menuItem/:restaurantId"
-            element={<AddNewMenuItemForm />}
+            path="/restaurants/:restaurantId"
+            element={<RestaurantDetails />}
           />
-          <Route path="/edit-menuItem/:menuId" element={<EditMenuItem />} />
-          <Route path="/place-order" element={<PlaceOrder />} />
-          <Route path="/my-orders" element={<MyOrders />} />
-          <Route path="/restaurant/orders" element={<RestaurantOrderQueue />} />
-        </Route>
-      </Routes>
-    </>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/add-restaurant" element={<AddRestaurantForm />} />
+            <Route path="/edit-restaurant" element={<EditRestaurantForm />} />
+            <Route
+              path="/add-new-menuItem/:restaurantId"
+              element={<AddNewMenuItemForm />}
+            />
+            <Route path="/edit-menuItem/:menuId" element={<EditMenuItem />} />
+            <Route path="/place-order" element={<PlaceOrder />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+            <Route
+              path="/restaurant/orders"
+              element={<RestaurantOrderQueue />}
+            />
+          </Route>
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
   );
 };
 

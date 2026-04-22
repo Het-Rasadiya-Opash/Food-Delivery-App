@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
@@ -8,17 +8,54 @@ import {
   setRestaurantOrderLoading,
   setRestaurantOrderError,
 } from "../features/orderSlice";
+import {
+  ArrowLeft,
+  Clock,
+  CheckCircle,
+  ChefHat,
+  Truck,
+  XCircle,
+  Filter,
+  RefreshCw,
+  AlertCircle,
+  ShoppingBag,
+  MapPin,
+  Phone,
+} from "lucide-react";
 
-const STATUS_COLORS = {
-  PLACED: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  ACCEPTED: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  PREPARING: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  OUT_FOR_DELIVERY: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  DELIVERED: "bg-green-500/20 text-green-400 border-green-500/30",
-  CANCELLED: "bg-red-500/20 text-red-400 border-red-500/30",
+const STATUS_CONFIG = {
+  PLACED: {
+    color: "bg-blue-100 text-blue-700 border-blue-200",
+    icon: <Clock size={16} />,
+  },
+  ACCEPTED: {
+    color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    icon: <CheckCircle size={16} />,
+  },
+  PREPARING: {
+    color: "bg-orange-100 text-orange-700 border-orange-200",
+    icon: <ChefHat size={16} />,
+  },
+  OUT_FOR_DELIVERY: {
+    color: "bg-purple-100 text-purple-700 border-purple-200",
+    icon: <Truck size={16} />,
+  },
+  DELIVERED: {
+    color: "bg-green-100 text-green-700 border-green-200",
+    icon: <CheckCircle size={16} />,
+  },
+  CANCELLED: {
+    color: "bg-red-100 text-red-700 border-red-200",
+    icon: <XCircle size={16} />,
+  },
 };
 
-const TABS = ["All", "New", "Active", "Done"];
+const TABS = [
+  { id: "All", label: "All Orders", icon: <Filter size={16} /> },
+  { id: "New", label: "New", icon: <Clock size={16} /> },
+  { id: "Active", label: "Active", icon: <ChefHat size={16} /> },
+  { id: "Done", label: "Completed", icon: <CheckCircle size={16} /> },
+];
 
 const RestaurantOrderQueue = () => {
   const dispatch = useDispatch();
@@ -57,31 +94,30 @@ const RestaurantOrderQueue = () => {
     }
   }, [currentUser, dispatch]);
 
-  useEffect(() => {
-    const fetchOrders = async (showLoading = false) => {
-      if (!restaurantId) return;
+  const fetchOrders = async (showLoading = false) => {
+    if (!restaurantId) return;
 
-      try {
-        if (showLoading && orders.length === 0) {
-          dispatch(setRestaurantOrderLoading(true));
-        }
-
-        const res = await apiRequest.get(
-          `/orders/restaurant-manager/${restaurantId}`,
-        );
-
-        dispatch(setRestaurantOrders(res.data.data));
-      } catch (err) {
-        dispatch(
-          setRestaurantOrderError(
-            err.response?.data?.message || "Failed to load queue.",
-          ),
-        );
+    try {
+      if (showLoading && orders.length === 0) {
+        dispatch(setRestaurantOrderLoading(true));
       }
-    };
 
+      const res = await apiRequest.get(
+        `/orders/restaurant-manager/${restaurantId}`,
+      );
+      dispatch(setRestaurantOrders(res.data.data));
+    } catch (err) {
+      dispatch(
+        setRestaurantOrderError(
+          err.response?.data?.message || "Failed to load queue.",
+        ),
+      );
+    }
+  };
+
+  useEffect(() => {
     fetchOrders(true);
-  }, [restaurantId, dispatch, orders.length]);
+  }, [restaurantId, dispatch]);
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
@@ -105,11 +141,9 @@ const RestaurantOrderQueue = () => {
       if (activeTab === "All") return true;
       if (activeTab === "New") return o.status === "PLACED";
       if (activeTab === "Active")
-        return ["ACCEPTED", "PREPARING"].includes(o.status);
+        return ["ACCEPTED", "PREPARING", "OUT_FOR_DELIVERY"].includes(o.status);
       if (activeTab === "Done")
-        return ["OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"].includes(
-          o.status,
-        );
+        return ["DELIVERED", "CANCELLED"].includes(o.status);
       return true;
     });
   };
@@ -119,42 +153,70 @@ const RestaurantOrderQueue = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-900 text-red-500">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-          <p>{error}</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-gray-800">
+        <AlertCircle size={64} className="text-red-500 mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+        <p className="text-gray-500 mb-6">{error}</p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition shadow-sm"
+        >
+          Return to Dashboard
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Orders Queue</h1>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/")}
+              className="p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors border border-gray-200"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
+                Order Queue
+              </h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Manage incoming orders and track their status in real-time.
+              </p>
+            </div>
+          </div>
+
           <button
-            onClick={() => navigate("/")}
-            className="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-100 rounded-lg text-sm"
+            onClick={() => fetchOrders(false)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors border border-gray-200 text-sm font-medium"
           >
-            Back
+            <RefreshCw
+              size={16}
+              className={loading ? "animate-spin text-orange-500" : ""}
+            />
+            Refresh Queue
           </button>
         </div>
 
-        <div className="flex gap-3 mb-6 flex-wrap">
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {TABS.map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm border transition ${
-                activeTab === tab
-                  ? "bg-black text-white border-black"
-                  : "bg-white border-gray-300 hover:bg-gray-100"
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all shadow-sm ${
+                activeTab === tab.id
+                  ? "bg-gray-900 text-white border border-gray-900"
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               }`}
             >
-              {tab}
-              {tab === "New" && newCount > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+              {tab.icon}
+              {tab.label}
+              {tab.id === "New" && newCount > 0 && (
+                <span
+                  className={`ml-1.5 px-2 py-0.5 rounded-full text-xs ${activeTab === tab.id ? "bg-white text-gray-900" : "bg-red-500 text-white"}`}
+                >
                   {newCount}
                 </span>
               )}
@@ -162,103 +224,171 @@ const RestaurantOrderQueue = () => {
           ))}
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-[60vh]">
-            <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+        {loading && orders.length === 0 ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="w-10 h-10 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin" />
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="text-center text-gray-500 mt-20">No orders found</div>
+          <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100 flex flex-col items-center">
+            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+              <ShoppingBag size={32} className="text-gray-400" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">No orders found</h3>
+            <p className="text-gray-500 mt-2 max-w-sm mx-auto">
+              There are currently no orders in the {activeTab.toLowerCase()}{" "}
+              queue.
+            </p>
+          </div>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredOrders.map((order) => (
-              <div
-                key={order._id}
-                className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm"
-              >
-                <div className="flex justify-between items-center mb-3">
-                  <h2 className="font-semibold text-lg">
-                    #{order._id.slice(-6)}
-                  </h2>
-                  <span
-                    className={`px-3 py-1 text-xs border rounded-full ${
-                      STATUS_COLORS[order.status]
-                    }`}
-                  >
-                    {order.status.replaceAll("_", " ")}
-                  </span>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredOrders.map((order) => {
+              const statusConfig =
+                STATUS_CONFIG[order.status] || STATUS_CONFIG.PLACED;
 
-                <div className="text-sm text-gray-500 mb-3">
-                  {order.customer?.name || "Customer"}
-                </div>
-
-                <div className="space-y-1 mb-4">
-                  {order.items?.map((item, i) => (
-                    <div
-                      key={i}
-                      className="flex justify-between text-sm text-gray-700"
-                    >
-                      <span>
-                        {item.name} x {item.quantity}
+              return (
+                <div
+                  key={order._id}
+                  className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col"
+                >
+                  {/* Card Header */}
+                  <div className="p-5 border-b border-gray-100">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h2 className="font-extrabold text-gray-900 text-lg">
+                          #{order._id.slice(-6).toUpperCase()}
+                        </h2>
+                        <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                          <Clock size={12} />{" "}
+                          {new Date(order.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                      <span
+                        className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold border rounded-full ${statusConfig.color}`}
+                      >
+                        {statusConfig.icon}
+                        {order.status.replaceAll("_", " ")}
                       </span>
-                      <span>₹{item.price * item.quantity}</span>
                     </div>
-                  ))}
+
+                    <div className="flex items-start gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                        <span className="font-bold text-sm">
+                          {(order.customer?.name || "C")[0]}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-gray-900">
+                          {order.customer?.name || "Customer"}
+                        </p>
+                        {order.deliveryAddress && (
+                          <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1 line-clamp-1">
+                            <MapPin size={12} /> {order.deliveryAddress.street},{" "}
+                            {order.deliveryAddress.city}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-5 flex-1 bg-gray-50/50">
+                    <div className="space-y-3">
+                      {order.items?.map((item, i) => (
+                        <div
+                          key={i}
+                          className="flex justify-between items-start"
+                        >
+                          <div className="flex gap-2">
+                            <span className="font-bold text-gray-900 text-sm">
+                              {item.quantity}x
+                            </span>
+                            <span className="text-sm text-gray-700 font-medium">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="text-sm font-bold text-gray-900">
+                            ₹{item.price * item.quantity}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Total & Actions */}
+                  <div className="p-5 border-t border-gray-100 bg-white rounded-b-2xl">
+                    <div className="flex justify-between items-center mb-5">
+                      <span className="text-gray-500 font-medium text-sm">
+                        Total Amount
+                      </span>
+                      <span className="text-xl font-extrabold text-gray-900">
+                        ₹{order.totalPrice}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-3">
+                      {order.status === "PLACED" && (
+                        <>
+                          <button
+                            disabled={isActionLoading === order._id}
+                            onClick={() =>
+                              handleUpdateStatus(order._id, "ACCEPTED")
+                            }
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors"
+                          >
+                            <CheckCircle size={18} /> Accept
+                          </button>
+                          <button
+                            disabled={isActionLoading === order._id}
+                            onClick={() =>
+                              handleUpdateStatus(order._id, "CANCELLED")
+                            }
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold disabled:opacity-50 transition-colors border border-red-200"
+                          >
+                            <XCircle size={18} /> Reject
+                          </button>
+                        </>
+                      )}
+
+                      {order.status === "ACCEPTED" && (
+                        <button
+                          disabled={isActionLoading === order._id}
+                          onClick={() =>
+                            handleUpdateStatus(order._id, "PREPARING")
+                          }
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors shadow-lg shadow-orange-500/20"
+                        >
+                          <ChefHat size={18} /> Start Preparing
+                        </button>
+                      )}
+
+                      {order.status === "PREPARING" && (
+                        <button
+                          disabled={isActionLoading === order._id}
+                          onClick={() =>
+                            handleUpdateStatus(order._id, "OUT_FOR_DELIVERY")
+                          }
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors shadow-lg shadow-purple-600/20"
+                        >
+                          <Truck size={18} /> Send for Delivery
+                        </button>
+                      )}
+
+                      {["OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"].includes(
+                        order.status,
+                      ) && (
+                        <div className="w-full flex justify-center py-3 bg-gray-50 rounded-xl text-gray-500 text-sm font-medium border border-gray-100">
+                          {order.status === "CANCELLED"
+                            ? "Order Cancelled"
+                            : "Order Processed"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-
-                <div className="flex justify-between font-semibold mb-4">
-                  <span>Total</span>
-                  <span>₹{order.totalPrice}</span>
-                </div>
-
-                <div className="flex gap-2 flex-wrap">
-                  {order.status === "PLACED" && (
-                    <>
-                      <button
-                        disabled={isActionLoading === order._id}
-                        onClick={() =>
-                          handleUpdateStatus(order._id, "ACCEPTED")
-                        }
-                        className="flex-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm disabled:opacity-50"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        disabled={isActionLoading === order._id}
-                        onClick={() =>
-                          handleUpdateStatus(order._id, "CANCELLED")
-                        }
-                        className="flex-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm disabled:opacity-50"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
-
-                  {order.status === "ACCEPTED" && (
-                    <button
-                      disabled={isActionLoading === order._id}
-                      onClick={() => handleUpdateStatus(order._id, "PREPARING")}
-                      className="w-full px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm disabled:opacity-50"
-                    >
-                      Start Preparing
-                    </button>
-                  )}
-
-                  {order.status === "PREPARING" && (
-                    <button
-                      disabled={isActionLoading === order._id}
-                      onClick={() =>
-                        handleUpdateStatus(order._id, "OUT_FOR_DELIVERY")
-                      }
-                      className="w-full px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm disabled:opacity-50"
-                    >
-                      Out for Delivery
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
