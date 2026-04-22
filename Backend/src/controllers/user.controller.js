@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const register = asyncHandler(async (req, res) => {
-  const { username, email, role, password } = req.body;
+  const { username, email, role, password, address } = req.body;
   if ([email, username, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
@@ -19,6 +19,7 @@ export const register = asyncHandler(async (req, res) => {
     email,
     password,
     role,
+    address,
   });
   const token = user.generateToken();
   const createdUser = await userModel.findById(user._id).select("-password");

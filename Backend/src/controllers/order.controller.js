@@ -120,3 +120,27 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, order, "Order cancelled successfully"));
 });
+
+export const getRestaurantOrders = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+  const restaurant = await restaurantModel.findById(restaurantId);
+  if (!restaurant) {
+    throw new ApiError(400, "Restaurant not found");
+  }
+  const isManager = req.user._id === restaurant.owner.toString();
+
+  if (!isManager) {
+    throw new ApiError(
+      400,
+      "Not Authorzied - Please Restaurant Manager Access",
+    );
+  }
+
+  const orders = await orderModel
+    .find({ restaurant: restaurantId })
+    .populate("user");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Fetch Orders successfully"));
+});

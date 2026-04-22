@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import OwnerRestaurant from "../components/OwnerRestaurant";
 import AllMenuItems from "../components/AllMenuItems";
+import RestaurantManagerOrders from "../components/RestaurantManagerOrders";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.users);
@@ -53,6 +54,9 @@ const Profile = () => {
           </div>
           <div className="w-full max-w-4xl">
             <AllMenuItems />
+          </div>
+           <div className="w-full max-w-4xl">
+            <RestaurantManagerOrders />
           </div>
         </>
       )}

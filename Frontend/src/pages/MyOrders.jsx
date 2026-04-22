@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from "react";
-import apiRequest from "../utils/apiRequest";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import apiRequest from "../utils/apiRequest";
+import {
+  setOrders,
+  updateOrder,
+  setOrderLoading,
+  setOrderError,
+  setCancelError,
+} from "../features/orderSlice";
 
 const STATUS_COLORS = {
   PLACED: "bg-blue-100 text-blue-700",
@@ -12,36 +20,40 @@ const STATUS_COLORS = {
 };
 
 const MyOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const orders = useSelector((state) => state.orders?.orders ?? []);
+  const loading = useSelector((state) => state.orders?.loading ?? false);
+  const error = useSelector((state) => state.orders?.error ?? null);
+  const cancelError = useSelector((state) => state.orders?.cancelError ?? null);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        setLoading(true);
+        dispatch(setOrderLoading(true));
         const res = await apiRequest.get("/orders/my-orders");
-        setOrders(res.data.data);
+        dispatch(setOrders(res.data.data));
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load orders");
-      } finally {
-        setLoading(false);
+        dispatch(
+          setOrderError(err.response?.data?.message || "Failed to load orders"),
+        );
       }
     };
     fetchOrders();
-  }, []);
+  }, [dispatch]);
 
   const handleCancel = async (orderId) => {
     try {
+      dispatch(setCancelError(null));
       const res = await apiRequest.patch(`/orders/${orderId}/cancel`, {
         cancelReason: "Cancelled by customer",
       });
-      setOrders((prev) =>
-        prev.map((o) => (o._id === orderId ? res.data.data : o))
-      );
+      dispatch(updateOrder(res.data.data));
     } catch (err) {
-      alert(err.response?.data?.message || "Cannot cancel order");
+      dispatch(
+        setCancelError(err.response?.data?.message || "Cannot cancel order"),
+      );
     }
   };
 
@@ -55,7 +67,9 @@ const MyOrders = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen text-red-500">{error}</div>
+      <div className="flex items-center justify-center h-screen text-red-500">
+        {error}
+      </div>
     );
   }
 
@@ -63,17 +77,29 @@ const MyOrders = () => {
     <div className="min-h-screen bg-gray-100 p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">My Orders</h1>
 
+      {cancelError && (
+        <div className="mb-4 px-4 py-3 bg-red-100 text-red-600 rounded-lg text-sm">
+          {cancelError}
+        </div>
+      )}
+
       {orders.length === 0 ? (
         <div className="text-center text-gray-500 py-20">
           <p className="text-lg mb-3">No orders yet</p>
-          <button onClick={() => navigate("/")} className="text-red-500 underline">
+          <button
+            onClick={() => navigate("/")}
+            className="text-red-500 underline"
+          >
             Browse Restaurants
           </button>
         </div>
       ) : (
         <div className="space-y-5">
           {orders.map((order) => (
-            <div key={order._id} className="bg-white rounded-2xl shadow-md p-5 space-y-4">
+            <div
+              key={order._id}
+              className="bg-white rounded-2xl shadow-md p-5 space-y-4"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-bold text-gray-800 text-lg">
@@ -83,21 +109,30 @@ const MyOrders = () => {
                     {new Date(order.createdAt).toLocaleString()}
                   </p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[order.status]}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[order.status]}`}
+                >
                   {order.status.replace("_", " ")}
                 </span>
               </div>
 
               <div className="space-y-2">
                 {order.items.map((item) => (
-                  <div key={item.menuItemId} className="flex items-center gap-3">
+                  <div
+                    key={item.menuItemId}
+                    className="flex items-center gap-3"
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
                       className="w-10 h-10 rounded-lg object-cover"
                     />
-                    <span className="text-sm text-gray-700 flex-1">{item.name}</span>
-                    <span className="text-sm text-gray-500">x{item.quantity}</span>
+                    <span className="text-sm text-gray-700 flex-1">
+                      {item.name}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      x{item.quantity}
+                    </span>
                     <span className="text-sm font-semibold text-red-500">
                       ₹{(item.price * item.quantity).toFixed(2)}
                     </span>
