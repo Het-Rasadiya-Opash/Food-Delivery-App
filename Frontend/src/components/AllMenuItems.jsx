@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
 import {
   setMenuItems,
@@ -9,11 +8,13 @@ import {
 } from "../features/menuItemSlice";
 
 const AllMenuItems = () => {
-  const { restaurantId } = useParams();
   const dispatch = useDispatch();
   const { loading, error, menuItems } = useSelector((state) => state.menuItem);
+  const { restaurant } = useSelector((state) => state.restaurant);
+  const restaurantId = restaurant?._id;
 
   useEffect(() => {
+    if (!restaurantId) return;
     const fetchAllMenus = async () => {
       try {
         dispatch(setMenuItemLoading(true));
@@ -85,6 +86,7 @@ const AllMenuItems = () => {
                   Add
                 </button>
               </div>
+              
             </div>
           ))}
         </div>

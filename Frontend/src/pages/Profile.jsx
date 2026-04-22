@@ -1,7 +1,7 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import OwnerRestaurant from "../components/OwnerRestaurant";
+import AllMenuItems from "../components/AllMenuItems";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.users);
@@ -48,6 +48,9 @@ const Profile = () => {
 
       <div className="w-full max-w-4xl">
         <OwnerRestaurant />
+      </div>
+      <div className="w-full max-w-4xl">
+        <AllMenuItems />
       </div>
     </div>
   );
