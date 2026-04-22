@@ -18,7 +18,7 @@ const RestaurantManagerOrders = () => {
       try {
         dispatch(setOrderLoading(true));
         const res = await apiRequest.get(
-          `/orders/restaurant-manager/${restaurantId}`
+          `/orders/restaurant-manager/${restaurantId}`,
         );
         dispatch(setOrders(res.data.data));
       } catch (err) {
@@ -29,6 +29,8 @@ const RestaurantManagerOrders = () => {
     };
     if (restaurantId) fetchOrders();
   }, [dispatch, restaurantId]);
+
+  console.log(orders);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -63,14 +65,11 @@ const RestaurantManagerOrders = () => {
               {order.isPaid ? "Paid" : "Unpaid"}
             </div>
 
-            <div className="text-gray-600">
-              Total: ₹{order.totalPrice}
-            </div>
+            <div className="text-gray-600">Total: ₹{order.totalPrice}</div>
 
             <div className="text-gray-600">
               Address: {order.deliveryAddress?.street},{" "}
-              {order.deliveryAddress?.city},{" "}
-              {order.deliveryAddress?.state} -{" "}
+              {order.deliveryAddress?.city}, {order.deliveryAddress?.state} -{" "}
               {order.deliveryAddress?.zip}
             </div>
 
@@ -88,14 +87,10 @@ const RestaurantManagerOrders = () => {
                       className="w-16 h-16 object-cover rounded"
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-gray-800">
-                        {item.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {item.category}
-                      </p>
+                      <p className="font-medium text-gray-800">{item.name}</p>
+                      <p className="text-sm text-gray-500">{item.category}</p>
                       <p className="text-sm text-gray-600">
-                        ₹{item.price} × {item.quantity}
+                        ₹{item.price} × {item.quantity} 
                       </p>
                     </div>
                   </div>
@@ -104,8 +99,7 @@ const RestaurantManagerOrders = () => {
             </div>
 
             <div className="text-sm text-gray-500">
-              Ordered at:{" "}
-              {new Date(order.createdAt).toLocaleString()}
+              Ordered at: {new Date(order.createdAt).toLocaleString()}
             </div>
           </div>
         ))}
