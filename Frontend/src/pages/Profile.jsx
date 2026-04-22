@@ -46,12 +46,16 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-4xl">
-        <OwnerRestaurant />
-      </div>
-      <div className="w-full max-w-4xl">
-        <AllMenuItems />
-      </div>
+      {currentUser.role === "Restaurant Manager" && (
+        <>
+          <div className="w-full max-w-4xl">
+            <OwnerRestaurant />
+          </div>
+          <div className="w-full max-w-4xl">
+            <AllMenuItems />
+          </div>
+        </>
+      )}
     </div>
   );
 };

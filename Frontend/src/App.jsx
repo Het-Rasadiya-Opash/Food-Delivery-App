@@ -14,6 +14,8 @@ import EditRestaurantForm from "./pages/EditRestaurantForm";
 import RestaurantDetails from "./components/RestaurantDetails";
 import AddNewMenuItemForm from "./pages/AddNewMenuItemForm";
 import EditMenuItem from "./pages/EditMenuItem";
+import PlaceOrder from "./pages/PlaceOrder";
+import MyOrders from "./pages/MyOrders";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -52,6 +54,8 @@ const App = () => {
             element={<AddNewMenuItemForm />}
           />
           <Route path="/edit-menuItem/:menuId" element={<EditMenuItem />} />
+          <Route path="/place-order" element={<PlaceOrder />} />
+          <Route path="/my-orders" element={<MyOrders />} />
         </Route>
       </Routes>
     </>

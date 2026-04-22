@@ -86,26 +86,25 @@ const orderSchema = new mongoose.Schema(
     ],
 
     deliveryAddress: {
-      street: {
-        type: String,
-        required: true,
-      },
-      city: {
-        type: String,
-        required: true,
-      },
+      street: { type: String, required: true },
+      city: { type: String, required: true },
       state: String,
       zip: String,
-      location: {
-        type: {
-          type: String,
-          enum: ["Point"],
-          default: "Point",
-        },
-        coordinates: {
-          type: [Number],
-        },
-      },
+    },
+
+    deliveryNotes: {
+      type: String,
+      default: "",
+    },
+
+    estimatedDeliveryTime: {
+      type: Date,
+      default: null,
+    },
+
+    cancelReason: {
+      type: String,
+      default: null,
     },
 
     paymentMethod: {
@@ -122,14 +121,13 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-orderSchema.pre("save", function (next) {
+orderSchema.pre("save", function() {
   if (this.isNew) {
     this.statusHistory.push({ status: "PLACED" });
   }
-  next();
 });
 
-orderSchema.index({ "deliveryAddress.location": "2dsphere" });
+
 
 const orderModel = mongoose.model("Order", orderSchema);
 
