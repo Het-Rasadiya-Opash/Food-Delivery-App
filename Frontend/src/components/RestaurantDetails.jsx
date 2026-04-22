@@ -7,11 +7,16 @@ import {
   setRestaurantLoading,
   setRestaurantError,
 } from "../features/restaurantSlice";
+import AllMenuItems from "./AllMenuItems";
 
 const RestaurantDetails = () => {
   const { restaurantId } = useParams();
   const dispatch = useDispatch();
-  const { selectedRestaurant: restaurant, loading, error } = useSelector((state) => state.restaurant);
+  const {
+    selectedRestaurant: restaurant,
+    loading,
+    error,
+  } = useSelector((state) => state.restaurant);
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -87,6 +92,7 @@ const RestaurantDetails = () => {
             </div>
           </div>
         </div>
+        <AllMenuItems />
       </div>
     </div>
   );

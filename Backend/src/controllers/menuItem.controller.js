@@ -1,4 +1,5 @@
 import menuItemModel from "../models/MenuItem.model.js";
+import restaurantModel from "../models/restaurant.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -8,8 +9,18 @@ export const createMenu = asyncHandler(async (req, res) => {
   const { restaurantId } = req.params;
   const { name, description, price, category, isAvailable } = req.body;
 
-  if (!name?.trim()) throw new ApiError(400, "Name is required");
-  if (!price) throw new ApiError(400, "Price is required");
+  if (!name || !price) {
+    throw new ApiError("Name and Price Are required");
+  }
+
+  const restaurant = await restaurantModel.findById(restaurantId);
+  if (!restaurant) {
+    throw new ApiError(404, "Restaurant not found");
+  }
+
+  if (restaurant.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Only  restaurant Manager  add menu items");
+  }
 
   const imageFile = req.file;
   let imageUrl = null;
@@ -33,4 +44,14 @@ export const createMenu = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(new ApiResponse(201, menuItem, "Menu item created successfully"));
+});
+
+export const getAllMenusForRestaurants = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+  const menuItems = await menuItemModel.find({
+    restaurant: { $in: restaurantId },
+  });
+  return res
+    .status(200)
+    .json(new ApiResponse(201, menuItems, "Menu item fetch successfully"));
 });
