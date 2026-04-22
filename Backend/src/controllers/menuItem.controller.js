@@ -49,7 +49,7 @@ export const createMenu = asyncHandler(async (req, res) => {
 export const getAllMenusForRestaurants = asyncHandler(async (req, res) => {
   const { restaurantId } = req.params;
   const menuItems = await menuItemModel.find({
-    restaurant: { $in: restaurantId },
+    restaurant: restaurantId,
   });
   return res
     .status(200)
