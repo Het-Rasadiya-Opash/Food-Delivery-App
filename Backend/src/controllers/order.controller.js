@@ -127,12 +127,12 @@ export const getRestaurantOrders = asyncHandler(async (req, res) => {
   if (!restaurant) {
     throw new ApiError(400, "Restaurant not found");
   }
-  const isManager = req.user._id === restaurant.owner.toString();
+  const isManager = req.user._id.toString() === restaurant.owner.toString();
 
   if (!isManager) {
     throw new ApiError(
-      400,
-      "Not Authorzied - Please Restaurant Manager Access",
+      403,
+      "Not Authorized - Requires Restaurant Manager Access",
     );
   }
 
@@ -143,4 +143,43 @@ export const getRestaurantOrders = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, orders, "Fetch Orders successfully"));
+});
+
+export const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  const order = await orderModel.findById(orderId).populate("restaurant");
+  if (!order) throw new ApiError(404, "Order not found");
+
+  if (order.restaurant.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Not authorized to update this order");
+  }
+
+  const validTransitions = {
+    PLACED: ["ACCEPTED", "CANCELLED"],
+    ACCEPTED: ["PREPARING"],
+    PREPARING: ["OUT_FOR_DELIVERY"],
+  };
+
+  if (!validTransitions[order.status]?.includes(status)) {
+    throw new ApiError(
+      400,
+      `Cannot transition order from ${order.status} to ${status}`,
+    );
+  }
+
+  order.status = status;
+  if (status === "CANCELLED") {
+    order.cancelReason = req.body.cancelReason || "Rejected by restaurant";
+    order.statusHistory.push({ status, note: order.cancelReason });
+  } else {
+    order.statusHistory.push({ status });
+  }
+
+  await order.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, `Order marked as ${status}`));
 });

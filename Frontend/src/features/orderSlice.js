@@ -5,6 +5,9 @@ const initialState = {
   loading: false,
   error: null,
   cancelError: null,
+  restaurantOrders: [],
+  restaurantOrdersLoading: false,
+  restaurantOrdersError: null,
 };
 
 const orderSlice = createSlice({
@@ -35,6 +38,24 @@ const orderSlice = createSlice({
     clearOrderErrors: (state) => {
       state.error = null;
       state.cancelError = null;
+      state.restaurantOrdersError = null;
+    },
+    setRestaurantOrders: (state, action) => {
+      state.restaurantOrders = action.payload;
+      state.restaurantOrdersLoading = false;
+      state.restaurantOrdersError = null;
+    },
+    updateRestaurantOrder: (state, action) => {
+      const updated = action.payload;
+      const idx = state.restaurantOrders.findIndex((o) => o._id === updated._id);
+      if (idx !== -1) state.restaurantOrders[idx] = updated;
+    },
+    setRestaurantOrderLoading: (state, action) => {
+      state.restaurantOrdersLoading = action.payload;
+    },
+    setRestaurantOrderError: (state, action) => {
+      state.restaurantOrdersError = action.payload;
+      state.restaurantOrdersLoading = false;
     },
   },
 });
@@ -46,6 +67,10 @@ export const {
   setOrderError,
   setCancelError,
   clearOrderErrors,
+  setRestaurantOrders,
+  updateRestaurantOrder,
+  setRestaurantOrderLoading,
+  setRestaurantOrderError,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;

@@ -16,6 +16,7 @@ import AddNewMenuItemForm from "./pages/AddNewMenuItemForm";
 import EditMenuItem from "./pages/EditMenuItem";
 import PlaceOrder from "./pages/PlaceOrder";
 import MyOrders from "./pages/MyOrders";
+import RestaurantOrderQueue from "./pages/RestaurantOrderQueue";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ const App = () => {
           <Route path="/edit-menuItem/:menuId" element={<EditMenuItem />} />
           <Route path="/place-order" element={<PlaceOrder />} />
           <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/restaurant/orders" element={<RestaurantOrderQueue />} />
         </Route>
       </Routes>
     </>
