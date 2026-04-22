@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import AddRestaurantForm from "./pages/AddRestaurantForm";
 import EditRestaurantForm from "./pages/EditRestaurantForm";
 import RestaurantDetails from "./components/RestaurantDetails";
+import AddNewMenuItemForm from "./pages/AddNewMenuItemForm";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,10 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/restaurants/:restaurantId" element={<RestaurantDetails />} />
+        <Route
+          path="/restaurants/:restaurantId"
+          element={<RestaurantDetails />}
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
 
@@ -42,6 +46,10 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-restaurant" element={<AddRestaurantForm />} />
           <Route path="/edit-restaurant" element={<EditRestaurantForm />} />
+          <Route
+            path="/add-new-menuItem/:restaurantId"
+            element={<AddNewMenuItemForm />}
+          />
         </Route>
       </Routes>
     </>

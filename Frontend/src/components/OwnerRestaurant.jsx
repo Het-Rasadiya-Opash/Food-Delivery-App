@@ -1,17 +1,19 @@
-import React, { useEffect } from "react";
-import apiRequest from "../utils/apiRequest";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
-  setRestaurant,
-  setRestaurantLoading,
-  setRestaurantError,
   clearRestaurant,
+  setRestaurant,
+  setRestaurantError,
+  setRestaurantLoading,
 } from "../features/restaurantSlice";
+import apiRequest from "../utils/apiRequest";
 
 const OwnerRestaurant = () => {
   const dispatch = useDispatch();
-  const { restaurant, loading, error } = useSelector((state) => state.restaurant);
+  const { restaurant, loading, error } = useSelector(
+    (state) => state.restaurant,
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -111,8 +113,20 @@ const OwnerRestaurant = () => {
             >
               Edit
             </button>
-            <button className="px-5 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"  onClick={() => handleDelete(restaurant._id)}>
+            <button
+              className="px-5 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+              onClick={() => handleDelete(restaurant._id)}
+            >
               Delete
+            </button>
+          </div>
+
+          <div>
+            <button
+              onClick={() => navigate(`/add-new-menuItem/${restaurant._id}`)}
+              className="px-5 py-2 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+            >
+              Add MenuItem
             </button>
           </div>
         </div>

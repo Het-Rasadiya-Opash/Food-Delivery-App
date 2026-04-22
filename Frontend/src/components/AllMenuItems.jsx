@@ -11,9 +11,7 @@ import {
 const AllMenuItems = () => {
   const { restaurantId } = useParams();
   const dispatch = useDispatch();
-  const { loading, error, menuItems } = useSelector(
-    (state) => state.menuItem
-  );
+  const { loading, error, menuItems } = useSelector((state) => state.menuItem);
 
   useEffect(() => {
     const fetchAllMenus = async () => {
@@ -22,7 +20,11 @@ const AllMenuItems = () => {
         const res = await apiRequest.get(`/menuItems/${restaurantId}`);
         dispatch(setMenuItems(res.data.data));
       } catch (err) {
-        dispatch(setMenuItemError(err.response?.data?.message || "Something went wrong"));
+        dispatch(
+          setMenuItemError(
+            err.response?.data?.message || "Something went wrong",
+          ),
+        );
       } finally {
         dispatch(setMenuItemLoading(false));
       }
@@ -63,6 +65,9 @@ const AllMenuItems = () => {
               key={item._id}
               className="bg-white rounded-2xl shadow-md hover:shadow-lg transition p-5 flex flex-col justify-between"
             >
+              <div>
+                <img src={item.image} alt="" />
+              </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   {item.name}
