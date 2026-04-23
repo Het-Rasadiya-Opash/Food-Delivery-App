@@ -33,7 +33,7 @@ const EditRestaurantForm = () => {
     lng: restaurant?.address?.location?.coordinates?.[0] || "",
     isOpen: restaurant?.isOpen ?? true,
     rating: restaurant?.rating || 0,
-    images: [],
+    image: null,
   });
 
   const handleChange = (e) => {
@@ -41,7 +41,7 @@ const EditRestaurantForm = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, images: e.target.files });
+    setFormData({ ...formData, image: e.target.files[0] || null });
   };
 
   const handleSubmit = async (e) => {
@@ -65,10 +65,7 @@ const EditRestaurantForm = () => {
       data.append("address", JSON.stringify(address));
       data.append("isOpen", formData.isOpen);
       data.append("rating", formData.rating);
-
-      Array.from(formData.images).forEach((file) => {
-        data.append("images", file);
-      });
+      if (formData.image) data.append("image", formData.image);
 
       const res = await apiRequest.put(`/restaurants/${restaurant._id}`, data);
       dispatch(setRestaurant(res.data.data));
@@ -250,21 +247,19 @@ const EditRestaurantForm = () => {
                     <span>Upload a file</span>
                     <input
                       id="file-upload"
-                      name="file-upload"
+                      name="image"
                       type="file"
-                      multiple
+                      accept="image/*"
                       className="sr-only"
                       onChange={handleFileChange}
                     />
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">
-                  PNG, JPG, GIF up to 10MB
-                </p>
-                {formData.images.length > 0 && (
+                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                {formData.image && (
                   <p className="text-sm font-semibold text-green-600 mt-2">
-                    {formData.images.length} file(s) selected
+                    {formData.image.name}
                   </p>
                 )}
               </div>

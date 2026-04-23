@@ -10,8 +10,9 @@ const restaurantSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    images: {
-      type: [String],
+    image: {
+      type: String,
+      default: null,
     },
     address: {
       street: String,

@@ -87,7 +87,7 @@ const OwnerRestaurant = () => {
         <div className="relative h-64 sm:h-80 w-full overflow-hidden">
           <img
             src={
-              restaurant.images?.[0] ||
+              restaurant.image ||
               "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
             }
             alt={restaurant.name}

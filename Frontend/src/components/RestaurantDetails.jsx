@@ -63,7 +63,7 @@ const RestaurantDetails = () => {
       <div className="relative h-96 bg-gray-900">
         <img
           src={
-            restaurant.images?.[0] ||
+            restaurant.image ||
             "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
           }
           alt={restaurant.name}

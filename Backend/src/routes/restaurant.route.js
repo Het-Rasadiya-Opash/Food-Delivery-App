@@ -26,7 +26,7 @@ router.post(
   "/create",
   authMiddleware,
   authorizeRole("Restaurant Manager"),
-  upload.array("images", 5),
+  upload.single("image"),
   createRestaurant,
 );
 
@@ -34,7 +34,7 @@ router.put(
   "/:restaurantId",
   authMiddleware,
   authorizeRole("Restaurant Manager"),
-  upload.array("images", 5),
+  upload.single("image"),
   editRestaurant,
 );
 

@@ -28,22 +28,20 @@ export const createRestaurant = asyncHandler(async (req, res) => {
     throw new ApiError(409, "You already have a restaurant");
   }
 
-  const imageFiles = req.files || [];
-  const uploadedImages = await Promise.all(
-    imageFiles.map((file) => uploadOnCloudinary(file.path)),
-  );
-
-  const imageUrls = uploadedImages
-    .filter((res) => res !== null)
-    .map((res) => res.secure_url);
+  const imageFile = req.file;
+  let imageUrl = null;
+  if (imageFile) {
+    const uploaded = await uploadOnCloudinary(imageFile.path);
+    if (uploaded) imageUrl = uploaded.secure_url;
+  }
 
   const restaurant = await restaurantModel.create({
     name,
     owner: req.user._id,
-    images: imageUrls,
+    image: imageUrl || null,
     address,
     isOpen,
-    rating
+    rating,
   });
 
   return res
@@ -106,15 +104,10 @@ export const editRestaurant = asyncHandler(async (req, res) => {
     );
   }
 
-  const imageFiles = req.files || [];
-  if (imageFiles.length > 0) {
-    const uploadedImages = await Promise.all(
-      imageFiles.map((file) => uploadOnCloudinary(file.path)),
-    );
-    const newImageUrls = uploadedImages
-      .filter((res) => res !== null)
-      .map((res) => res.secure_url);
-    restaurant.images = [...restaurant.images, ...newImageUrls];
+  const imageFile = req.file;
+  if (imageFile) {
+    const uploaded = await uploadOnCloudinary(imageFile.path);
+    if (uploaded) restaurant.image = uploaded.secure_url;
   }
 
   if (name) restaurant.name = name;

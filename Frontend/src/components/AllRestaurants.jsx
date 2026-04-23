@@ -65,7 +65,7 @@ const AllRestaurants = () => {
             <div className="relative h-48 overflow-hidden">
               <img
                 src={
-                  res.images?.[0] ||
+                  res.image ||
                   "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
                 }
                 alt={res.name}
