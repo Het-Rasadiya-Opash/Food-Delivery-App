@@ -14,6 +14,11 @@ import {
   ChevronRight,
   Info,
   Calendar,
+  Package,
+  Home,
+  Phone,
+  Star,
+  ClipboardList,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,44 +28,44 @@ const TIMELINE_STEPS = [
   {
     status: "PLACED",
     label: "Order Placed",
-    icon: ShoppingBag,
-    desc: "Your order has been received",
-    color: "orange",
+    icon: ClipboardList,
+    desc: "Request received",
+    color: "#F97316",
   },
   {
     status: "ACCEPTED",
     label: "Accepted",
     icon: CheckCircle,
-    desc: "Restaurant confirmed your order",
-    color: "blue",
+    desc: "Kitchen confirmed",
+    color: "#F97316",
   },
   {
     status: "PREPARING",
     label: "Preparing",
     icon: ChefHat,
-    desc: "Chef is preparing your food",
-    color: "purple",
+    desc: "In progress",
+    color: "#F97316",
   },
   {
     status: "READY_FOR_PICKUP",
-    label: "Ready for Pickup",
-    icon: Store,
-    desc: "Food is packed and ready",
-    color: "indigo",
+    label: "Ready",
+    icon: Package,
+    desc: "Waiting for courier",
+    color: "#94A3B8",
   },
   {
     status: "OUT_FOR_DELIVERY",
-    label: "Out for Delivery",
+    label: "On the Way",
     icon: Truck,
-    desc: "Driver is on the way",
-    color: "amber",
+    desc: "Courier on route",
+    color: "#94A3B8",
   },
   {
     status: "DELIVERED",
     label: "Delivered",
-    icon: CheckCircle,
+    icon: Home,
     desc: "Enjoy your meal!",
-    color: "green",
+    color: "#94A3B8",
   },
 ];
 
@@ -168,342 +173,195 @@ const OrderTracking = () => {
       : null;
   };
 
+  const getEstimatedArrival = () => {
+    if (!order.createdAt) return "N/A";
+    const createdDate = new Date(order.createdAt);
+    const arrivalDate = new Date(createdDate.getTime() + eta * 60000);
+    return arrivalDate.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + " Today";
+  };
+
+  const getStatusBadge = () => {
+    const statusMap = {
+      PLACED: "ORDER PLACED",
+      ACCEPTED: "ORDER ACCEPTED",
+      PREPARING: "PREPARING YOUR ORDER",
+      READY_FOR_PICKUP: "READY FOR PICKUP",
+      OUT_FOR_DELIVERY: "OUT FOR DELIVERY",
+      DELIVERED: "DELIVERED",
+      CANCELLED: "CANCELLED",
+    };
+    return statusMap[order.status] || order.status;
+  };
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-20">
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
-        <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <button
-            onClick={() => navigate("/my-orders")}
-            className="p-2 hover:bg-gray-50 rounded-xl transition-colors group"
-          >
-            <ArrowLeft
-              size={22}
-              className="text-gray-600 group-hover:-translate-x-1 transition-transform"
-            />
-          </button>
-          <div className="flex flex-col items-center">
-            <h1 className="text-sm font-extrabold text-gray-900 uppercase tracking-widest">
-              Tracking Center
+    <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-4 md:p-8 font-sans">
+      <div className="w-full max-w-5xl bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
+        <div className="p-8 pb-4 flex justify-between items-start">
+          <div>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+              ORDER STATUS
+            </p>
+            <h1 className="text-3xl font-black text-[#1E293B] mb-2 flex items-center gap-2">
+              Order #{order._id.slice(-8).toUpperCase()}
             </h1>
-            {isActive && (
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-[10px] font-bold text-green-600 uppercase">
-                  Live Updates
-                </span>
-              </div>
-            )}
-          </div>
-          <button
-            onClick={() => fetchOrder(false)}
-            className={`p-2 hover:bg-gray-50 rounded-xl transition-colors ${loading ? "animate-spin text-orange-500" : "text-gray-400"}`}
-          >
-            <RefreshCw size={18} />
-          </button>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 mt-6 space-y-6">
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-8">
-            {isActive && (
-              <div className="backdrop-blur-xl bg-orange-500/10 border border-orange-500/20 rounded-3xl px-5 py-3 text-center">
-                <p className="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-0.5">
-                  Arriving in
-                </p>
-                <div className="flex items-baseline justify-center gap-0.5">
-                  <span className="text-3xl font-black text-orange-600">
-                    {eta}
-                  </span>
-                  <span className="text-sm font-bold text-orange-500">min</span>
-                </div>
-              </div>
-            )}
-            {isDelivered && (
-              <div className="backdrop-blur-xl bg-green-500/10 border border-green-500/20 rounded-3xl p-3">
-                <CheckCircle size={32} className="text-green-500" />
-              </div>
-            )}
-            {isCancelled && (
-              <div className="backdrop-blur-xl bg-red-500/10 border border-red-500/20 rounded-3xl p-3">
-                <XCircle size={32} className="text-red-500" />
-              </div>
-            )}
-          </div>
-
-          <div className="relative z-10 space-y-6">
-            <div>
-              <span className="inline-block px-3 py-1 bg-gray-100 rounded-full text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">
-                Order #{order._id.slice(-8).toUpperCase()}
-              </span>
-              <h2 className="text-3xl font-black text-gray-900 leading-tight">
-                {order.restaurant?.name}
-              </h2>
-              <div className="flex items-center gap-4 mt-3">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
-                  <Calendar size={14} />
-                  {new Date(order.createdAt).toLocaleDateString([], {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </div>
-                <div className="w-1 h-1 bg-gray-200 rounded-full" />
-                <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
-                  <Clock size={14} />
-                  {new Date(order.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
-              </div>
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
+              <Clock size={16} className="text-orange-500" />
+              <span>Estimated Arrival: <span className="text-[#1E293B]">{getEstimatedArrival()}</span></span>
             </div>
-
-            {order.driver && (
-              <div className="bg-gray-50 rounded-3xl p-4 flex items-center gap-4 border border-gray-100 group-hover:bg-blue-50 transition-colors duration-500">
-                <div className="relative">
-                  <div className="w-14 h-14 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
-                    {order.driver?.avatar ? (
-                      <img
-                        src={order.driver.avatar}
-                        alt="Driver"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User size={24} className="text-gray-400" />
-                    )}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-1 rounded-lg shadow-lg border-2 border-white">
-                    <Truck size={12} />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-0.5">
-                    Your Delivery Partner
-                  </p>
-                  <p className="text-lg font-black text-gray-900">
-                    {order.driver?.username}
-                  </p>
-                </div>
-                <button className="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 hover:scale-110 active:scale-95 transition-all">
-                  <ChevronRight size={20} />
-                </button>
-              </div>
-            )}
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-[#FFF7ED] border border-[#FFEDD5] rounded-full shadow-sm">
+              <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+              <span className="text-xs font-black text-orange-600 uppercase tracking-wider">
+                {getStatusBadge()}
+              </span>
+            </div>
+            <button
+              onClick={() => navigate("/my-orders")}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+            >
+              <XCircle size={24} />
+            </button>
           </div>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-gray-900">Order Status</h3>
-            {isCancelled && (
-              <span className="px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-100">
-                Cancelled
-              </span>
-            )}
-          </div>
+        <div className="px-8 py-10">
+          <div className="relative flex justify-between items-start">
+            <div className="absolute top-[28px] left-[30px] right-[30px] h-[2px] bg-gray-100 -z-0" />
+            <div 
+              className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000"
+              style={{ width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%` }}
+            />
 
-          {isCancelled ? (
-            <div className="p-6 bg-red-50 rounded-3xl border border-red-100 flex gap-4">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                <XCircle size={24} className="text-red-500" />
-              </div>
-              <div>
-                <p className="font-bold text-red-900">Order Cancelled</p>
-                <p className="text-sm text-red-600 mt-1">
-                  {order.cancelReason ||
-                    "This order has been cancelled by the restaurant or user."}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-start justify-between pb-6 pt-4 gap-1 relative before:absolute before:top-[1.75rem] before:left-[2.5rem] before:right-[2.5rem] before:h-0.5 before:bg-gray-100">
-              {TIMELINE_STEPS.map((step, index) => {
-                const Icon = step.icon;
-                const isDone = index < currentStepIndex;
-                const isCurrent = index === currentStepIndex;
-                const isPending = index > currentStepIndex;
-                const timestamp = getTimestamp(step.status);
+            {TIMELINE_STEPS.map((step, index) => {
+              const Icon = step.icon;
+              const isDone = index < currentStepIndex;
+              const isCurrent = index === currentStepIndex;
+              const isPending = index > currentStepIndex;
+              const timestamp = getTimestamp(step.status);
 
-                return (
-                  <div
-                    key={step.status}
-                    className="relative flex flex-col items-center gap-3 flex-1 min-w-0"
+              return (
+                <div key={step.status} className="relative z-10 flex flex-col items-center flex-1">
+                  <div 
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 ${
+                      isDone || isCurrent 
+                        ? "bg-orange-500 text-white" 
+                        : "bg-white text-gray-300"
+                    } ${isCurrent ? "ring-8 ring-orange-500/10 scale-110 shadow-orange-500/20 shadow-2xl" : ""}`}
                   >
-                    <div
-                      className={`relative z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 border-4 border-white shadow-md transition-all duration-500 ${isDone || (isCurrent && step.status === "DELIVERED")
-                          ? "bg-green-500 text-white"
-                          : isCurrent
-                            ? "bg-orange-500 text-white ring-4 ring-orange-50 scale-110"
-                            : "bg-gray-50 text-gray-300 border-gray-100"
-                        }`}
-                    >
-                      <Icon size={20} className="sm:size-6" />
-                      {(isDone ||
-                        (isCurrent && step.status === "DELIVERED")) && (
-                          <div className="absolute -top-1 -right-1 bg-green-100 text-green-600 p-0.5 rounded-full border border-white">
-                            <CheckCircle
-                              size={10}
-                              fill="currentColor"
-                              className="text-white"
-                            />
-                          </div>
-                        )}
-                    </div>
-
-                    <div className="text-center w-full px-1">
-                      <div className="flex flex-col items-center gap-1">
-                        <p
-                          className={`font-black text-[9px] sm:text-[10px] uppercase tracking-wider transition-colors duration-500 line-clamp-1 ${isCurrent && step.status === "DELIVERED"
-                              ? "text-gray-900"
-                              : isCurrent
-                                ? "text-orange-600"
-                                : isDone
-                                  ? "text-gray-900"
-                                  : "text-gray-400"
-                            }`}
-                        >
-                          {step.label}
-                        </p>
-                        {timestamp && (
-                          <span className="text-[8px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-lg border border-gray-100">
-                            {timestamp}
-                          </span>
-                        )}
-                      </div>
-                      <p
-                        className={`text-[8px] sm:text-[9px] mt-1.5 leading-tight hidden sm:block line-clamp-2 max-w-[80px] mx-auto ${isPending ? "text-gray-300" : "text-gray-500"
-                          }`}
-                      >
-                        {step.desc}
-                      </p>
-                      {isCurrent && (
-                        <div className="mt-1.5 flex justify-center">
-                          <span
-                            className={`px-1 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest flex items-center gap-1 ${isDelivered
-                                ? "bg-green-50 text-gray-900"
-                                : "bg-orange-50 text-orange-600"
-                              }`}
-                          >
-                            <span
-                              className={`w-1 h-1 rounded-full ${isDelivered
-                                  ? "bg-green-500"
-                                  : "bg-orange-500 animate-ping"
-                                }`}
-                            />
-                            {isDelivered ? "Done" : "Process"}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    {isDone ? <CheckCircle size={22} /> : <Icon size={22} />}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 group">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
-              <MapPin size={22} className="text-orange-500" /> Delivery To
-            </h3>
-          </div>
-          <div className="space-y-4">
-            <div className="p-5 bg-gray-50 rounded-3xl border border-gray-100 group-hover:border-orange-100 group-hover:bg-orange-50/30 transition-all duration-500">
-              <p className="text-sm font-black text-gray-900">
-                {order.deliveryAddress?.street}
-              </p>
-              <p className="text-xs font-bold text-gray-400 mt-1">
-                {order.deliveryAddress?.city}
-                {order.deliveryAddress?.state
-                  ? `, ${order.deliveryAddress.state}`
-                  : ""}
-                {order.deliveryAddress?.zip
-                  ? ` - ${order.deliveryAddress.zip}`
-                  : ""}
-              </p>
-              {order.deliveryNotes && (
-                <div className="mt-4 p-3 bg-white/50 rounded-2xl border border-gray-100">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                    <Info size={10} /> Note for driver
-                  </p>
-                  <p className="text-xs text-gray-600 italic leading-relaxed">
-                    "{order.deliveryNotes}"
-                  </p>
+                  
+                  <div className="mt-4 text-center">
+                    <p className={`text-[13px] font-black uppercase tracking-tight mb-0.5 ${
+                      isPending ? "text-gray-400" : "text-[#1E293B]"
+                    }`}>
+                      {step.label}
+                    </p>
+                    <p className={`text-[10px] font-bold ${
+                      isPending ? "text-gray-300" : "text-gray-400"
+                    }`}>
+                      {timestamp || (isCurrent ? "In progress" : isPending ? "Pending" : "")}
+                    </p>
+                    <p className={`text-[10px] font-medium mt-1 leading-tight ${
+                      isPending ? "text-gray-200" : "text-gray-400"
+                    }`}>
+                      {step.desc}
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
+              );
+            })}
           </div>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-black text-gray-900">Order Summary</h3>
-            <span className="text-xs font-black text-gray-400 bg-gray-50 px-3 py-1 rounded-full uppercase tracking-widest">
-              {order.items.length} {order.items.length === 1 ? "Item" : "Items"}
-            </span>
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="relative rounded-3xl overflow-hidden min-h-[300px] shadow-inner group">
+            <img 
+              src="/map_bg.png" 
+              alt="Map" 
+              className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+            />
+            
+            <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-4 animate-in slide-in-from-bottom-4 duration-700">
+              <div className="w-12 h-12 bg-[#FFF7ED] rounded-xl flex items-center justify-center text-orange-500 border border-[#FFEDD5]">
+                <MapPin size={24} />
+              </div>
+              <div className="flex-1">
+                <p className="text-[13px] font-black text-[#1E293B]">
+                  {order.driver?.username || "Mark J."} is your courier
+                </p>
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 mt-0.5">
+                  <Star size={10} className="fill-[#F59E0B] text-orange-500" />
+                  <span>5.0</span>
+                  <span className="text-gray-200">•</span>
+                  <span>1,200+ deliveries</span>
+                </div>
+              </div>
+              <button className="px-5 py-2 bg-orange-500 text-white rounded-xl text-xs font-black hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 active:scale-95">
+                Call
+              </button>
+            </div>
+            
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="relative">
+                <div className="w-12 h-12 bg-orange-500/20 rounded-full animate-ping absolute -inset-0" />
+                <div className="w-12 h-12 bg-white rounded-full shadow-2xl flex items-center justify-center relative border-4 border-orange-500">
+                  <Truck size={20} className="text-orange-500" />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {order.items.map((item) => (
-              <div
-                key={item.menuItemId}
-                className="flex items-center gap-4 p-2 group hover:bg-gray-50 rounded-2xl transition-colors"
-              >
-                <div className="w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm shrink-0">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-black text-gray-900">
-                    {item.name}
-                  </p>
-                  <p className="text-xs font-bold text-gray-400 mt-0.5">
-                    {item.quantity} x ₹{item.price.toFixed(2)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-black text-gray-900">
+          <div className="bg-[#F8FAFC] rounded-3xl p-8 flex flex-col h-full border border-gray-100">
+            <h3 className="text-xl font-black text-[#1E293B] mb-6">Order Summary</h3>
+            
+            <div className="flex-1 space-y-4 mb-8 overflow-y-auto pr-2">
+              {order.items.map((item) => (
+                <div key={item.menuItemId} className="flex justify-between items-center group">
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[11px] font-black text-orange-500">
+                      {item.quantity}x
+                    </span>
+                    <p className="text-[13px] font-bold text-gray-600 group-hover:text-[#1E293B] transition-colors">
+                      {item.name}
+                    </p>
+                  </div>
+                  <p className="text-[13px] font-black text-[#1E293B]">
                     ₹{(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
+              ))}
+              
+              <div className="flex justify-between items-center py-4 border-t border-dashed border-gray-200">
+                <p className="text-[13px] font-bold text-gray-400">Delivery Fee</p>
+                <p className="text-[13px] font-black text-orange-500 uppercase tracking-widest">FREE</p>
               </div>
-            ))}
-          </div>
+            </div>
 
-          <div className="mt-8 pt-6 border-t border-dashed border-gray-200">
-            <div className="flex justify-between items-center px-2">
-              <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  Total Amount
-                </p>
-                <p className="text-xs font-bold text-gray-400 mt-0.5">
-                  Inc. all taxes and charges
-                </p>
+            <div className="pt-6 border-t border-gray-200 mt-auto">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">
+                    TOTAL AMOUNT
+                  </p>
+                  <p className="text-4xl font-black text-[#1E293B]">
+                    ₹{order.totalPrice.toFixed(2)}
+                  </p>
+                </div>
+                <div className="px-3 py-1.5 bg-white border border-gray-100 rounded-xl shadow-sm flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                    Paid via Visa
+                  </span>
+                </div>
               </div>
-              <p className="text-3xl font-black text-gray-900">
-                ₹{order.totalPrice.toFixed(2)}
-              </p>
             </div>
           </div>
         </div>
-
-        {lastUpdated && isActive && (
-          <div className="flex flex-col items-center justify-center gap-2 pt-4">
-            <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">
-              Last updated {lastUpdated.toLocaleTimeString()}
-            </p>
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 rounded-full border border-gray-200">
-              <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                Refreshing every 15 seconds
-              </span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -95,7 +95,7 @@ const AllRestaurants = () => {
                 </h3>
                 <div className="flex items-center gap-1 bg-orange-50 px-2 py-1 rounded-lg">
                   <Star size={14} className="text-orange-500 fill-orange-500" />
-                  <span className="text-sm font-bold text-orange-700">
+                  <span className="text-sm font-bold text-orange-500">
                     {res.rating || "New"}
                   </span>
                 </div>
