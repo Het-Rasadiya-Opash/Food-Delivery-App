@@ -16,7 +16,9 @@ import {
   Info,
   ChevronRight,
   IndianRupee,
+  Star,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const STATUS_CONFIG = {
   OUT_FOR_DELIVERY: {
@@ -43,6 +45,7 @@ const TABS = [
 
 const DriverDashboard = () => {
   const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.users.currentUser);
   const [availableOrders, setAvailableOrders] = useState([]);
   const [myOrders, setMyOrders] = useState([]);
   const [tab, setTab] = useState("available");
@@ -123,12 +126,14 @@ const DriverDashboard = () => {
               <ArrowLeft size={20} />
             </button>
             <div>
-              <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
-                <Truck className="text-orange-600" size={28} />
-                Driver Dashboard
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
+                  <Truck className="text-orange-600" size={28} />
+                  Driver Dashboard
+                </h1>
+              </div>
               <p className="text-sm text-gray-500 mt-1">
-                Manage your active deliveries and find new opportunities.
+                Welcome back, <span className="font-bold text-gray-700">{currentUser?.username}</span>! Manage your active deliveries.
               </p>
             </div>
           </div>
