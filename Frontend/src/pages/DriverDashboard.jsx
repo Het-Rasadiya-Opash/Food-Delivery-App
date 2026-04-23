@@ -18,7 +18,17 @@ import {
   IndianRupee,
   Star,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setAvailableOrders,
+  setAvailableOrdersLoading,
+  setAvailableOrdersError,
+  setOrders,
+  setOrderLoading,
+  setOrderError,
+  updateOrder,
+  updateAvailableOrder,
+} from "../features/orderSlice";
 
 const STATUS_CONFIG = {
   OUT_FOR_DELIVERY: {
@@ -45,34 +55,46 @@ const TABS = [
 
 const DriverDashboard = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.users.currentUser);
-  const [availableOrders, setAvailableOrders] = useState([]);
-  const [myOrders, setMyOrders] = useState([]);
+
+  const availableOrders = useSelector((state) => state.orders.availableOrders);
+  const availableLoading = useSelector(
+    (state) => state.orders.availableOrdersLoading,
+  );
+  const availableError = useSelector(
+    (state) => state.orders.availableOrdersError,
+  );
+
+  const myOrders = useSelector((state) => state.orders.orders);
+  const myLoading = useSelector((state) => state.orders.loading);
+  const myError = useSelector((state) => state.orders.error);
+
   const [tab, setTab] = useState("available");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const fetchAvailable = async () => {
     try {
-      setLoading(true);
+      dispatch(setAvailableOrdersLoading(true));
       const res = await apiRequest.get("/orders/driver/available");
-      setAvailableOrders(res.data.data);
+      dispatch(setAvailableOrders(res.data.data));
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load orders");
-    } finally {
-      setLoading(false);
+      dispatch(
+        setAvailableOrdersError(
+          err.response?.data?.message || "Failed to load orders",
+        ),
+      );
     }
   };
 
   const fetchMyOrders = async () => {
     try {
-      setLoading(true);
+      dispatch(setOrderLoading(true));
       const res = await apiRequest.get("/orders/driver/my-orders");
-      setMyOrders(res.data.data);
+      dispatch(setOrders(res.data.data));
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load orders");
-    } finally {
-      setLoading(false);
+      dispatch(
+        setOrderError(err.response?.data?.message || "Failed to load orders"),
+      );
     }
   };
 
@@ -84,7 +106,9 @@ const DriverDashboard = () => {
   const handleClaim = async (orderId) => {
     try {
       await apiRequest.patch(`/orders/${orderId}/claim`);
-      setAvailableOrders((prev) => prev.filter((o) => o._id !== orderId));
+      dispatch(
+        setAvailableOrders(availableOrders.filter((o) => o._id !== orderId)),
+      );
       setTab("my-orders");
       fetchMyOrders();
     } catch (err) {
@@ -97,13 +121,14 @@ const DriverDashboard = () => {
       const res = await apiRequest.patch(`/orders/${orderId}/driver-status`, {
         status,
       });
-      setMyOrders((prev) =>
-        prev.map((o) => (o._id === orderId ? res.data.data : o)),
-      );
+      dispatch(updateOrder(res.data.data));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to update status");
     }
   };
+
+  const loading = tab === "available" ? availableLoading : myLoading;
+  const error = tab === "available" ? availableError : myError;
 
   if (loading && availableOrders.length === 0 && myOrders.length === 0) {
     return (
@@ -133,7 +158,11 @@ const DriverDashboard = () => {
                 </h1>
               </div>
               <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
-                Welcome back, <span className="font-bold text-gray-700">{currentUser?.username}</span>!
+                Welcome back,{" "}
+                <span className="font-bold text-gray-700">
+                  {currentUser?.username}
+                </span>
+                !
                 {currentUser?.rating > 0 && (
                   <span className="flex items-center gap-1 bg-orange-50 text-orange-600 px-2 py-0.5 rounded-lg text-xs font-bold border border-orange-100">
                     <Star size={12} fill="currentColor" />

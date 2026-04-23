@@ -5,6 +5,7 @@ import { logout } from "../features/usersSlice";
 import apiRequest from "../utils/apiRequest";
 import Cart from "./Cart";
 import { clearCart } from "../features/cartSlice";
+import { clearAllOrders } from "../features/orderSlice";
 import {
   ShoppingCart,
   User,
@@ -36,6 +37,7 @@ const Navbar = () => {
       await apiRequest.post("/users/logout");
       dispatch(logout());
       dispatch(clearCart());
+      dispatch(clearAllOrders());
       setOpen(false);
       setMobileMenuOpen(false);
     } catch (error) {

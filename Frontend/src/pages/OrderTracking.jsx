@@ -15,7 +15,14 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import apiRequest from "../utils/apiRequest";
+import {
+  setCurrentOrder,
+  setCurrentOrderLoading,
+  setCurrentOrderError,
+  updateOrder,
+} from "../features/orderSlice";
 
 const TIMELINE_STEPS = [
   {
@@ -74,23 +81,27 @@ const ETA_MAP = {
 const OrderTracking = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
+  const order = useSelector((state) => state.orders.currentOrder);
+  const loading = useSelector((state) => state.orders.currentOrderLoading);
+  const error = useSelector((state) => state.orders.currentOrderError);
+
   const [rating, setRating] = useState({ restaurant: 0, driver: 0 });
   const [submitting, setSubmitting] = useState(false);
   const [isRated, setIsRated] = useState(false);
 
   const fetchOrder = async (showLoader = true) => {
     try {
-      if (showLoader) setLoading(true);
+      if (showLoader && !order) dispatch(setCurrentOrderLoading(true));
       const res = await apiRequest.get(`/orders/${orderId}`);
-      setOrder(res.data.data);
-      setError(null);
+      dispatch(setCurrentOrder(res.data.data));
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load order");
-    } finally {
-      setLoading(false);
+      dispatch(
+        setCurrentOrderError(
+          err.response?.data?.message || "Failed to load order",
+        ),
+      );
     }
   };
 
@@ -103,7 +114,7 @@ const OrderTracking = () => {
     if (["DELIVERED", "CANCELLED"].includes(order.status)) return;
     const interval = setInterval(() => fetchOrder(false), 15000);
     return () => clearInterval(interval);
-  }, [order]);
+  }, [order?.status, orderId]);
 
   if (loading && !order) {
     return (
@@ -148,12 +159,12 @@ const OrderTracking = () => {
     }
     try {
       setSubmitting(true);
-      await apiRequest.post(`/orders/${orderId}/rate`, {
+      const res = await apiRequest.post(`/orders/${orderId}/rate`, {
         restaurantRating: rating.restaurant,
         driverRating: rating.driver || undefined,
       });
       setIsRated(true);
-      setOrder({ ...order, isRated: true });
+      dispatch(updateOrder(res.data.data));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to submit rating");
     } finally {
@@ -426,12 +437,16 @@ const OrderTracking = () => {
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
-                        onClick={() => setRating({ ...rating, restaurant: star })}
+                        onClick={() =>
+                          setRating({ ...rating, restaurant: star })
+                        }
                         className={`transition-all duration-300 hover:scale-125 ${rating.restaurant >= star ? "text-orange-500" : "text-gray-300"}`}
                       >
                         <Star
                           size={28}
-                          fill={rating.restaurant >= star ? "currentColor" : "none"}
+                          fill={
+                            rating.restaurant >= star ? "currentColor" : "none"
+                          }
                         />
                       </button>
                     ))}
@@ -452,7 +467,9 @@ const OrderTracking = () => {
                         >
                           <Star
                             size={28}
-                            fill={rating.driver >= star ? "currentColor" : "none"}
+                            fill={
+                              rating.driver >= star ? "currentColor" : "none"
+                            }
                           />
                         </button>
                       ))}
