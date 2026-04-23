@@ -59,6 +59,8 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  console.log(currentUser);
+
   return (
     <>
       <nav className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm transition-all duration-300">
@@ -84,7 +86,7 @@ const Navbar = () => {
               >
                 <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-in zoom-in">
+                  <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-in zoom-in">
                     {cartCount}
                   </span>
                 )}
@@ -97,7 +99,7 @@ const Navbar = () => {
                     onClick={() => setOpen(!open)}
                   >
                     <span className="text-sm font-medium text-gray-700 hidden lg:block">
-                      {currentUser.name || "User"}
+                      {currentUser.username}
                     </span>
                     <img
                       src={
@@ -118,7 +120,7 @@ const Navbar = () => {
                   >
                     <div className="px-4 py-3 border-b border-gray-100 mb-2">
                       <p className="text-sm font-semibold text-gray-800 truncate">
-                        {currentUser.name || "User"}
+                        {currentUser.username}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
                         {currentUser.email}
