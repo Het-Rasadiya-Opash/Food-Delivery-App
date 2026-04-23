@@ -113,7 +113,7 @@ const AllMenuItems = () => {
         <p className="text-gray-500 max-w-xs mb-8">This restaurant hasn't listed any items yet.</p>
         {isOwner && (
           <button 
-            onClick={() => navigate("/add-menuItem")}
+            onClick={() => navigate(`/add-new-menuItem/${restaurantId}`)}
             className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95"
           >
             Add Menu Item
