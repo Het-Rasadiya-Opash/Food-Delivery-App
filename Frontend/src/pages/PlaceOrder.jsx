@@ -47,7 +47,7 @@ const PlaceOrder = () => {
     setLoading(true);
     setError(null);
     try {
-      await apiRequest.post("/orders", {
+      const res = await apiRequest.post("/orders", {
         restaurantId,
         items: items.map(({ menuItemId, quantity }) => ({
           menuItemId,
@@ -58,7 +58,7 @@ const PlaceOrder = () => {
         deliveryNotes,
       });
       dispatch(clearCart());
-      navigate("/my-orders");
+      navigate(`/order/${res.data.data._id}`);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to place order");
     } finally {

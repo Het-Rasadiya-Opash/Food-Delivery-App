@@ -239,6 +239,13 @@ const MyOrders = () => {
                       )}
 
                       <button
+                        onClick={() => navigate(`/order/${order._id}`)}
+                        className="w-full sm:w-auto px-5 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <MapPin size={16} /> Track Order
+                      </button>
+
+                      <button
                         onClick={() =>
                           navigate(`/restaurants/${order.restaurant?._id}`)
                         }

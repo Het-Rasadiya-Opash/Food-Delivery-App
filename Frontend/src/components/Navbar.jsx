@@ -59,8 +59,6 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  console.log(currentUser);
-
   return (
     <>
       <nav className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm transition-all duration-300">

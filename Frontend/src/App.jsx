@@ -16,6 +16,7 @@ import AddNewMenuItemForm from "./pages/AddNewMenuItemForm";
 import EditMenuItem from "./pages/EditMenuItem";
 import PlaceOrder from "./pages/PlaceOrder";
 import MyOrders from "./pages/MyOrders";
+import OrderTracking from "./pages/OrderTracking";
 import RestaurantOrderQueue from "./pages/RestaurantOrderQueue";
 import DriverDashboard from "./pages/DriverDashboard";
 import Footer from "./components/Footer";
@@ -59,6 +60,7 @@ const App = () => {
             <Route path="/edit-menuItem/:menuId" element={<EditMenuItem />} />
             <Route path="/place-order" element={<PlaceOrder />} />
             <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/order/:orderId" element={<OrderTracking />} />
             <Route
               path="/restaurant/orders"
               element={<RestaurantOrderQueue />}
