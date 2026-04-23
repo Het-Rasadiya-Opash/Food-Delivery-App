@@ -187,8 +187,6 @@ export const getRestaurantOrders = asyncHandler(async (req, res) => {
 
 //Driver
 
-//Driver
-
 export const getAvailableOrders = asyncHandler(async (req, res) => {
   const orders = await orderModel
     .find({ status: "READY_FOR_PICKUP", driver: null })
@@ -272,4 +270,66 @@ export const getMyDriverOrders = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, orders, "Driver orders fetched"));
+});
+
+
+//review 
+export const rateOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { restaurantRating, driverRating } = req.body;
+
+  if (!restaurantRating || restaurantRating < 1 || restaurantRating > 5) {
+    throw new ApiError(400, "Valid restaurant rating (1-5) is required");
+  }
+
+  const order = await orderModel
+    .findById(orderId)
+    .populate("restaurant")
+    .populate("driver");
+
+  if (!order) throw new ApiError(404, "Order not found");
+
+  if (order.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Not authorized to rate this order");
+  }
+
+  if (order.status !== "DELIVERED") {
+    throw new ApiError(400, "Only delivered orders can be rated");
+  }
+
+  if (order.isRated) {
+    throw new ApiError(400, "Order has already been rated");
+  }
+
+  // Update Order
+  order.restaurantRating = restaurantRating;
+  if (driverRating && driverRating >= 1 && driverRating <= 5) {
+    order.driverRating = driverRating;
+  }
+  order.isRated = true;
+  await order.save();
+
+  // Update Restaurant Rating
+  const restaurant = order.restaurant;
+  if (restaurant) {
+    const total = restaurant.totalRatings || 0;
+    const currentAvg = restaurant.rating || 0;
+    restaurant.rating = (currentAvg * total + restaurantRating) / (total + 1);
+    restaurant.totalRatings = total + 1;
+    await restaurant.save();
+  }
+
+  // Update Driver Rating
+  const driver = order.driver;
+  if (driver && driverRating && driverRating >= 1 && driverRating <= 5) {
+    const total = driver.totalRatings || 0;
+    const currentAvg = driver.rating || 0;
+    driver.rating = (currentAvg * total + driverRating) / (total + 1);
+    driver.totalRatings = total + 1;
+    await driver.save();
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, "Order rated successfully"));
 });

@@ -132,8 +132,14 @@ const DriverDashboard = () => {
                   Driver Dashboard
                 </h1>
               </div>
-              <p className="text-sm text-gray-500 mt-1">
-                Welcome back, <span className="font-bold text-gray-700">{currentUser?.username}</span>! Manage your active deliveries.
+              <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
+                Welcome back, <span className="font-bold text-gray-700">{currentUser?.username}</span>!
+                {currentUser?.rating > 0 && (
+                  <span className="flex items-center gap-1 bg-orange-50 text-orange-600 px-2 py-0.5 rounded-lg text-xs font-bold border border-orange-100">
+                    <Star size={12} fill="currentColor" />
+                    {currentUser.rating.toFixed(1)}
+                  </span>
+                )}
               </p>
             </div>
           </div>

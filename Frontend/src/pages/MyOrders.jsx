@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Store,
   AlertCircle,
+  Star,
 } from "lucide-react";
 
 const STATUS_CONFIG = {
@@ -244,6 +245,15 @@ const MyOrders = () => {
                       >
                         <MapPin size={16} /> Track Order
                       </button>
+
+                      {order.status === "DELIVERED" && !order.isRated && (
+                        <button
+                          onClick={() => navigate(`/order/${order._id}`)}
+                          className="w-full sm:w-auto px-5 py-2.5 bg-orange-100 text-orange-700 rounded-xl text-sm font-bold hover:bg-orange-200 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Star size={16} fill="currentColor" /> Rate Now
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

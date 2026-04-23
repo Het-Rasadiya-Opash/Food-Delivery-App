@@ -33,6 +33,14 @@ const userSchema = new mongoose.Schema(
         coordinates: { type: [Number] },
       },
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    totalRatings: {
+      type: Number,
+      default: 0,
+    },
   },
 
   {

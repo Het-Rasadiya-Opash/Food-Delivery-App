@@ -32,6 +32,10 @@ const restaurantSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalRatings: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );

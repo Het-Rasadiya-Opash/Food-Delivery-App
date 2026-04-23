@@ -118,7 +118,22 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
+    restaurantRating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      default: null,
+    },
+    driverRating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      default: null,
+    },
+    isRated: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

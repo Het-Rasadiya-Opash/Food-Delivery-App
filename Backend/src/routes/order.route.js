@@ -10,6 +10,7 @@ import {
   claimOrder,
   updateDriverStatus,
   getMyDriverOrders,
+  rateOrder,
 } from "../controllers/order.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { authorizeRole } from "../middlewares/authRole.middleware.js";
@@ -25,6 +26,7 @@ router.get(
   getRestaurantOrders,
 );
 router.get("/:orderId", authMiddleware, getOrderById);
+router.post("/:orderId/rate", authMiddleware, rateOrder);
 router.patch("/:orderId/cancel", authMiddleware, cancelOrder);
 router.patch(
   "/:orderId/status",

@@ -8,6 +8,7 @@ import {
   MapPin,
   Package,
   ShoppingBag,
+  Star,
   Store,
   Truck,
   XCircle,
@@ -76,6 +77,9 @@ const OrderTracking = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [rating, setRating] = useState({ restaurant: 0, driver: 0 });
+  const [submitting, setSubmitting] = useState(false);
+  const [isRated, setIsRated] = useState(false);
 
   const fetchOrder = async (showLoader = true) => {
     try {
@@ -136,6 +140,26 @@ const OrderTracking = () => {
   }
 
   if (!order) return null;
+
+  const handleRate = async () => {
+    if (rating.restaurant === 0) {
+      alert("Please rate the restaurant");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await apiRequest.post(`/orders/${orderId}/rate`, {
+        restaurantRating: rating.restaurant,
+        driverRating: rating.driver || undefined,
+      });
+      setIsRated(true);
+      setOrder({ ...order, isRated: true });
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to submit rating");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const currentStepIndex = TIMELINE_STEPS.findIndex(
     (s) => s.status === order.status,
@@ -367,6 +391,80 @@ const OrderTracking = () => {
             </div>
           </div>
         </div>
+
+        {order.status === "DELIVERED" && !order.isRated && !isRated && (
+          <div className="p-6 md:p-8 bg-orange-50 border-t border-orange-100 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="max-w-2xl mx-auto text-center">
+              <h3 className="text-xl font-black text-gray-900 mb-2">
+                Enjoyed your meal?
+              </h3>
+              <p className="text-sm text-gray-500 mb-8 font-medium">
+                Your feedback helps us improve the experience for everyone.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+                <div className="space-y-4">
+                  <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                    Rate Restaurant
+                  </p>
+                  <div className="flex justify-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setRating({ ...rating, restaurant: star })}
+                        className={`transition-all duration-300 hover:scale-125 ${rating.restaurant >= star ? "text-orange-500" : "text-gray-300"}`}
+                      >
+                        <Star
+                          size={28}
+                          fill={rating.restaurant >= star ? "currentColor" : "none"}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {order.driver && (
+                  <div className="space-y-4">
+                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                      Rate Courier
+                    </p>
+                    <div className="flex justify-center gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          onClick={() => setRating({ ...rating, driver: star })}
+                          className={`transition-all duration-300 hover:scale-125 ${rating.driver >= star ? "text-orange-500" : "text-gray-300"}`}
+                        >
+                          <Star
+                            size={28}
+                            fill={rating.driver >= star ? "currentColor" : "none"}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleRate}
+                disabled={submitting}
+                className="w-full sm:w-auto px-12 py-4 bg-gray-900 text-white font-black rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-900/20 active:scale-95 disabled:opacity-50"
+              >
+                {submitting ? "Submitting..." : "Submit Ratings"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {(order.isRated || isRated) && (
+          <div className="p-6 md:p-8 bg-green-50 border-t border-green-100 text-center animate-in fade-in duration-700">
+            <div className="flex items-center justify-center gap-2 text-green-700 font-black">
+              <CheckCircle size={20} />
+              <span>Thank you for your feedback!</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
