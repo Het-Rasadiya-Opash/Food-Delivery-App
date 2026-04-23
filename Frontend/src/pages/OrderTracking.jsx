@@ -197,14 +197,14 @@ const OrderTracking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-4 md:p-8 font-sans">
-      <div className="w-full max-w-5xl bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20">
-        <div className="p-8 pb-4 flex justify-between items-start">
-          <div>
+    <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-0 sm:p-4 md:p-8 font-sans">
+      <div className="w-full max-w-5xl bg-white sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20 min-h-screen sm:min-h-0">
+        <div className="p-6 md:p-8 pb-4 flex flex-col sm:flex-row justify-between items-start gap-6">
+          <div className="w-full sm:w-auto">
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
               ORDER STATUS
             </p>
-            <h1 className="text-3xl font-black text-[#1E293B] mb-2 flex items-center gap-2">
+            <h1 className="text-2xl md:text-3xl font-black text-[#1E293B] mb-2 flex items-center gap-2">
               Order #{order._id.slice(-8).toUpperCase()}
             </h1>
             <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
@@ -212,10 +212,10 @@ const OrderTracking = () => {
               <span>Estimated Arrival: <span className="text-[#1E293B]">{getEstimatedArrival()}</span></span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
             <div className="flex items-center gap-2 px-4 py-2 bg-[#FFF7ED] border border-[#FFEDD5] rounded-full shadow-sm">
               <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-              <span className="text-xs font-black text-orange-600 uppercase tracking-wider">
+              <span className="text-xs font-black text-orange-600 uppercase tracking-wider whitespace-nowrap">
                 {getStatusBadge()}
               </span>
             </div>
@@ -228,12 +228,20 @@ const OrderTracking = () => {
           </div>
         </div>
 
-        <div className="px-8 py-10">
-          <div className="relative flex justify-between items-start">
-            <div className="absolute top-[28px] left-[30px] right-[30px] h-[2px] bg-gray-100 -z-0" />
+        <div className="px-6 md:px-8 py-8 md:py-10">
+          <div className="relative flex flex-col md:flex-row justify-between items-start">
+            {/* Horizontal Line for Desktop */}
+            <div className="absolute top-[28px] left-[30px] right-[30px] h-[2px] bg-gray-100 -z-0 hidden md:block" />
             <div 
-              className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000"
+              className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000 hidden md:block"
               style={{ width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%` }}
+            />
+
+            {/* Vertical Line for Mobile */}
+            <div className="absolute left-[27px] top-[28px] bottom-[28px] w-[2px] bg-gray-100 -z-0 md:hidden" />
+            <div 
+              className="absolute left-[27px] top-[28px] w-[2px] bg-orange-500 -z-0 transition-all duration-1000 md:hidden"
+              style={{ height: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 100}%`, maxHeight: 'calc(100% - 56px)' }}
             />
 
             {TIMELINE_STEPS.map((step, index) => {
@@ -244,9 +252,9 @@ const OrderTracking = () => {
               const timestamp = getTimestamp(step.status);
 
               return (
-                <div key={step.status} className="relative z-10 flex flex-col items-center flex-1">
+                <div key={step.status} className={`relative z-10 flex flex-row md:flex-col items-center md:flex-1 gap-6 md:gap-0 ${index !== TIMELINE_STEPS.length - 1 ? "mb-8 md:mb-0" : ""}`}>
                   <div 
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 ${
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 flex-shrink-0 ${
                       isDone || isCurrent 
                         ? "bg-orange-500 text-white" 
                         : "bg-white text-gray-300"
@@ -255,7 +263,7 @@ const OrderTracking = () => {
                     {isDone ? <CheckCircle size={22} /> : <Icon size={22} />}
                   </div>
                   
-                  <div className="mt-4 text-center">
+                  <div className="md:mt-4 text-left md:text-center">
                     <p className={`text-[13px] font-black uppercase tracking-tight mb-0.5 ${
                       isPending ? "text-gray-400" : "text-[#1E293B]"
                     }`}>
@@ -278,7 +286,7 @@ const OrderTracking = () => {
           </div>
         </div>
 
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative rounded-3xl overflow-hidden min-h-[300px] shadow-inner group">
             <img 
               src="/map_bg.png" 
@@ -286,22 +294,22 @@ const OrderTracking = () => {
               className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
             />
             
-            <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-4 animate-in slide-in-from-bottom-4 duration-700">
-              <div className="w-12 h-12 bg-[#FFF7ED] rounded-xl flex items-center justify-center text-orange-500 border border-[#FFEDD5]">
-                <MapPin size={24} />
+            <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-4 animate-in slide-in-from-bottom-4 duration-700">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF7ED] rounded-xl flex items-center justify-center text-orange-500 border border-[#FFEDD5] flex-shrink-0">
+                <MapPin size={20} className="md:size-[24px]" />
               </div>
-              <div className="flex-1">
-                <p className="text-[13px] font-black text-[#1E293B]">
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] truncate">
                   {order.driver?.username || "Mark J."} is your courier
                 </p>
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 mt-0.5">
+                <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold text-gray-400 mt-0.5">
                   <Star size={10} className="fill-[#F59E0B] text-orange-500" />
                   <span>5.0</span>
                   <span className="text-gray-200">•</span>
                   <span>1,200+ deliveries</span>
                 </div>
               </div>
-              <button className="px-5 py-2 bg-orange-500 text-white rounded-xl text-xs font-black hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 active:scale-95">
+              <button className="px-4 md:px-5 py-2 bg-orange-500 text-white rounded-xl text-[10px] md:text-xs font-black hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 active:scale-95 flex-shrink-0">
                 Call
               </button>
             </div>
@@ -316,39 +324,39 @@ const OrderTracking = () => {
             </div>
           </div>
 
-          <div className="bg-[#F8FAFC] rounded-3xl p-8 flex flex-col h-full border border-gray-100">
-            <h3 className="text-xl font-black text-[#1E293B] mb-6">Order Summary</h3>
+          <div className="bg-[#F8FAFC] rounded-3xl p-6 md:p-8 flex flex-col h-full border border-gray-100">
+            <h3 className="text-lg md:text-xl font-black text-[#1E293B] mb-6">Order Summary</h3>
             
-            <div className="flex-1 space-y-4 mb-8 overflow-y-auto pr-2">
+            <div className="flex-1 space-y-4 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
               {order.items.map((item) => (
                 <div key={item.menuItemId} className="flex justify-between items-center group">
                   <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[11px] font-black text-orange-500">
+                    <span className="w-6 h-6 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[11px] font-black text-orange-500 flex-shrink-0">
                       {item.quantity}x
                     </span>
-                    <p className="text-[13px] font-bold text-gray-600 group-hover:text-[#1E293B] transition-colors">
+                    <p className="text-[12px] md:text-[13px] font-bold text-gray-600 group-hover:text-[#1E293B] transition-colors line-clamp-1">
                       {item.name}
                     </p>
                   </div>
-                  <p className="text-[13px] font-black text-[#1E293B]">
+                  <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] flex-shrink-0 ml-4">
                     ₹{(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
               ))}
               
               <div className="flex justify-between items-center py-4 border-t border-dashed border-gray-200">
-                <p className="text-[13px] font-bold text-gray-400">Delivery Fee</p>
-                <p className="text-[13px] font-black text-orange-500 uppercase tracking-widest">FREE</p>
+                <p className="text-[12px] md:text-[13px] font-bold text-gray-400">Delivery Fee</p>
+                <p className="text-[12px] md:text-[13px] font-black text-orange-500 uppercase tracking-widest">FREE</p>
               </div>
             </div>
 
             <div className="pt-6 border-t border-gray-200 mt-auto">
-              <div className="flex justify-between items-end mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">
                     TOTAL AMOUNT
                   </p>
-                  <p className="text-4xl font-black text-[#1E293B]">
+                  <p className="text-3xl md:text-4xl font-black text-[#1E293B]">
                     ₹{order.totalPrice.toFixed(2)}
                   </p>
                 </div>
