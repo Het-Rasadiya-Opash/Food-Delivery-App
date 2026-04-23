@@ -59,6 +59,7 @@ const AllMenuItems = () => {
       addToCart({
         restaurantId,
         restaurantName,
+        userId: currentUser?._id,
         item: {
           menuItemId: item._id,
           name: item.name,

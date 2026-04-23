@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { logout } from "../features/usersSlice";
 import apiRequest from "../utils/apiRequest";
 import Cart from "./Cart";
+import { clearCart } from "../features/cartSlice";
 import {
   ShoppingCart,
   User,
@@ -34,6 +35,7 @@ const Navbar = () => {
     try {
       await apiRequest.post("/users/logout");
       dispatch(logout());
+      dispatch(clearCart());
       setOpen(false);
       setMobileMenuOpen(false);
     } catch (error) {

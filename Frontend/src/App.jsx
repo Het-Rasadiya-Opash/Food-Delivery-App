@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import { useDispatch } from "react-redux";
 import { setCurrentUser, setCheckingAuth } from "./features/usersSlice";
+import { clearCart } from "./features/cartSlice";
 import apiRequest from "./utils/apiRequest";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
@@ -28,7 +29,13 @@ const App = () => {
     const checkAuth = async () => {
       try {
         const response = await apiRequest.get("/users");
-        dispatch(setCurrentUser(response.data.data));
+        const user = response.data.data;
+        // clear cart if it belongs to a different user
+        const savedCart = JSON.parse(localStorage.getItem("cart") || "{}");
+        if (savedCart.userId && savedCart.userId !== user._id) {
+          dispatch(clearCart());
+        }
+        dispatch(setCurrentUser(user));
       } catch (err) {
         dispatch(setCheckingAuth(false));
       }

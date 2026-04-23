@@ -3,9 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const loadCart = () => {
   try {
     const saved = localStorage.getItem("cart");
-    return saved ? JSON.parse(saved) : { restaurantId: null, restaurantName: "", items: [] };
+    return saved ? JSON.parse(saved) : { userId: null, restaurantId: null, restaurantName: "", items: [] };
   } catch {
-    return { restaurantId: null, restaurantName: "", items: [] };
+    return { userId: null, restaurantId: null, restaurantName: "", items: [] };
   }
 };
 
@@ -16,12 +16,13 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { restaurantId, restaurantName, item } = action.payload;
+      const { restaurantId, restaurantName, item, userId } = action.payload;
 
       if (state.restaurantId && state.restaurantId !== restaurantId) {
         state.items = [];
       }
 
+      state.userId = userId;
       state.restaurantId = restaurantId;
       state.restaurantName = restaurantName;
 
@@ -67,6 +68,7 @@ const cartSlice = createSlice({
       state.items = [];
       state.restaurantId = null;
       state.restaurantName = "";
+      state.userId = null;
     },
   },
 });
