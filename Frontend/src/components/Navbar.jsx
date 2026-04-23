@@ -155,6 +155,17 @@ const Navbar = () => {
                       </Link>
                     )}
 
+                    {currentUser?.role === "Driver" && (
+                      <Link
+                        to="/driver/dashboard"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-orange-600 bg-orange-50/50 hover:bg-orange-100 rounded-xl transition-colors mt-1"
+                        onClick={() => setOpen(false)}
+                      >
+                        <ListOrdered size={18} />
+                        Driver Dashboard
+                      </Link>
+                    )}
+
                     <div className="h-px bg-gray-100 my-2"></div>
 
                     <button
@@ -256,6 +267,17 @@ const Navbar = () => {
                   >
                     <UtensilsCrossed size={20} />
                     Manage Orders
+                  </Link>
+                )}
+
+                {currentUser?.role === "Driver" && (
+                  <Link
+                    to="/driver/dashboard"
+                    className="flex items-center gap-3 px-3 py-3 text-base font-medium text-orange-600 bg-orange-50 rounded-xl transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <ListOrdered size={20} />
+                    Driver Dashboard
                   </Link>
                 )}
 

@@ -32,8 +32,12 @@ const STATUS_CONFIG = {
     color: "bg-orange-100 text-orange-700 border-orange-200",
     icon: <Store size={14} />,
   },
+  READY_FOR_PICKUP: {
+    color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    icon: <MapPin size={14} />,
+  },
   OUT_FOR_DELIVERY: {
-    color: "bg-purple-100 text-purple-700 border-purple-200",
+    color: "bg-orange-100 text-orange-700 border-orange-200",
     icon: <MapPin size={14} />,
   },
   DELIVERED: {

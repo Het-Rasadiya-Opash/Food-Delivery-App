@@ -17,6 +17,7 @@ import EditMenuItem from "./pages/EditMenuItem";
 import PlaceOrder from "./pages/PlaceOrder";
 import MyOrders from "./pages/MyOrders";
 import RestaurantOrderQueue from "./pages/RestaurantOrderQueue";
+import DriverDashboard from "./pages/DriverDashboard";
 import Footer from "./components/Footer";
 
 const App = () => {
@@ -62,6 +63,7 @@ const App = () => {
               path="/restaurant/orders"
               element={<RestaurantOrderQueue />}
             />
+            <Route path="/driver/dashboard" element={<DriverDashboard />} />
           </Route>
         </Routes>
       </main>

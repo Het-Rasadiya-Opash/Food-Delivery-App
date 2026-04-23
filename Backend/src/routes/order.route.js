@@ -6,6 +6,10 @@ import {
   cancelOrder,
   getRestaurantOrders,
   updateOrderStatus,
+  getAvailableOrders,
+  claimOrder,
+  updateDriverStatus,
+  getMyDriverOrders,
 } from "../controllers/order.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { authorizeRole } from "../middlewares/authRole.middleware.js";
@@ -26,7 +30,33 @@ router.patch(
   "/:orderId/status",
   authMiddleware,
   authorizeRole("Restaurant Manager"),
-  updateOrderStatus
+  updateOrderStatus,
+);
+
+// Driver routes
+router.get(
+  "/driver/available",
+  authMiddleware,
+  authorizeRole("Driver"),
+  getAvailableOrders,
+);
+router.get(
+  "/driver/my-orders",
+  authMiddleware,
+  authorizeRole("Driver"),
+  getMyDriverOrders,
+);
+router.patch(
+  "/:orderId/claim",
+  authMiddleware,
+  authorizeRole("Driver"),
+  claimOrder,
+);
+router.patch(
+  "/:orderId/driver-status",
+  authMiddleware,
+  authorizeRole("Driver"),
+  updateDriverStatus,
 );
 
 export default router;

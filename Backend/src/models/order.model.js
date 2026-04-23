@@ -4,6 +4,7 @@ const ORDER_STATUSES = [
   "PLACED",
   "ACCEPTED",
   "PREPARING",
+  "READY_FOR_PICKUP",
   "OUT_FOR_DELIVERY",
   "DELIVERED",
   "CANCELLED",
@@ -121,13 +122,11 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-orderSchema.pre("save", function() {
+orderSchema.pre("save", function () {
   if (this.isNew) {
     this.statusHistory.push({ status: "PLACED" });
   }
 });
-
-
 
 const orderModel = mongoose.model("Order", orderSchema);
 

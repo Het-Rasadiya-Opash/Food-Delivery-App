@@ -121,6 +121,45 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, order, "Order cancelled successfully"));
 });
 
+export const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  const order = await orderModel.findById(orderId).populate("restaurant");
+  if (!order) throw new ApiError(404, "Order not found");
+
+  if (order.restaurant.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Not authorized to update this order");
+  }
+
+  const validTransitions = {
+    PLACED: ["ACCEPTED", "CANCELLED"],
+    ACCEPTED: ["PREPARING"],
+    PREPARING: ["READY_FOR_PICKUP"],
+  };
+
+  if (!validTransitions[order.status]?.includes(status)) {
+    throw new ApiError(
+      400,
+      `Cannot transition order from ${order.status} to ${status}`,
+    );
+  }
+
+  order.status = status;
+  if (status === "CANCELLED") {
+    order.cancelReason = req.body.cancelReason || "Rejected by restaurant";
+    order.statusHistory.push({ status, note: order.cancelReason });
+  } else {
+    order.statusHistory.push({ status });
+  }
+
+  await order.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, `Order marked as ${status}`));
+});
+
 export const getRestaurantOrders = asyncHandler(async (req, res) => {
   const { restaurantId } = req.params;
   const restaurant = await restaurantModel.findById(restaurantId);
@@ -145,41 +184,89 @@ export const getRestaurantOrders = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, orders, "Fetch Orders successfully"));
 });
 
-export const updateOrderStatus = asyncHandler(async (req, res) => {
+//Driver
+
+export const getAvailableOrders = asyncHandler(async (req, res) => {
+  const orders = await orderModel
+    .find({ status: "READY_FOR_PICKUP", driver: null })
+    .populate("restaurant", "name address")
+    .sort({ createdAt: 1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Available orders fetched"));
+});
+
+export const claimOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+
+  const order = await orderModel.findById(orderId);
+  if (!order) throw new ApiError(404, "Order not found");
+
+  if (order.status !== "READY_FOR_PICKUP") {
+    throw new ApiError(400, "Order is not ready for pickup");
+  }
+
+  if (order.driver) {
+    throw new ApiError(400, "Order already claimed by another driver");
+  }
+
+  order.driver = req.user._id;
+  order.status = "OUT_FOR_DELIVERY";
+  order.statusHistory.push({
+    status: "OUT_FOR_DELIVERY",
+    note: "Picked up by driver",
+  });
+  await order.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, "Order claimed successfully"));
+});
+
+export const updateDriverStatus = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
 
-  const order = await orderModel.findById(orderId).populate("restaurant");
+  const DRIVER_TRANSITIONS = {
+    OUT_FOR_DELIVERY: "DELIVERED",
+  };
+
+  if (!Object.values(DRIVER_TRANSITIONS).includes(status)) {
+    throw new ApiError(400, `Invalid driver status: ${status}`);
+  }
+
+  const order = await orderModel.findById(orderId);
   if (!order) throw new ApiError(404, "Order not found");
 
-  if (order.restaurant.owner.toString() !== req.user._id.toString()) {
+  if (!order.driver || order.driver.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "Not authorized to update this order");
   }
 
-  const validTransitions = {
-    PLACED: ["ACCEPTED", "CANCELLED"],
-    ACCEPTED: ["PREPARING"],
-    PREPARING: ["OUT_FOR_DELIVERY"],
-  };
-
-  if (!validTransitions[order.status]?.includes(status)) {
+  if (DRIVER_TRANSITIONS[order.status] !== status) {
     throw new ApiError(
       400,
-      `Cannot transition order from ${order.status} to ${status}`,
+      `Cannot transition from ${order.status} to ${status}`,
     );
   }
 
   order.status = status;
-  if (status === "CANCELLED") {
-    order.cancelReason = req.body.cancelReason || "Rejected by restaurant";
-    order.statusHistory.push({ status, note: order.cancelReason });
-  } else {
-    order.statusHistory.push({ status });
-  }
-
+  order.statusHistory.push({ status });
   await order.save();
 
   return res
     .status(200)
     .json(new ApiResponse(200, order, `Order marked as ${status}`));
+});
+
+export const getMyDriverOrders = asyncHandler(async (req, res) => {
+  const orders = await orderModel
+    .find({ driver: req.user._id })
+    .populate("restaurant", "name address")
+    .populate("user", "username")
+    .sort({ createdAt: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Driver orders fetched"));
 });

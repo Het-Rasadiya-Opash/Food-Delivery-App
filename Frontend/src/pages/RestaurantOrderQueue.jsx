@@ -36,8 +36,12 @@ const STATUS_CONFIG = {
     color: "bg-orange-100 text-orange-700 border-orange-200",
     icon: <ChefHat size={16} />,
   },
+  READY_FOR_PICKUP: {
+    color: "bg-yellow-100 text-yellow-700 border-yellow-200",
+    icon: <ShoppingBag size={16} />,
+  },
   OUT_FOR_DELIVERY: {
-    color: "bg-purple-100 text-purple-700 border-purple-200",
+    color: "bg-orange-100 text-orange-700 border-orange-200",
     icon: <Truck size={16} />,
   },
   DELIVERED: {
@@ -141,7 +145,12 @@ const RestaurantOrderQueue = () => {
       if (activeTab === "All") return true;
       if (activeTab === "New") return o.status === "PLACED";
       if (activeTab === "Active")
-        return ["ACCEPTED", "PREPARING", "OUT_FOR_DELIVERY"].includes(o.status);
+        return [
+          "ACCEPTED",
+          "PREPARING",
+          "READY_FOR_PICKUP",
+          "OUT_FOR_DELIVERY",
+        ].includes(o.status);
       if (activeTab === "Done")
         return ["DELIVERED", "CANCELLED"].includes(o.status);
       return true;
@@ -367,17 +376,20 @@ const RestaurantOrderQueue = () => {
                         <button
                           disabled={isActionLoading === order._id}
                           onClick={() =>
-                            handleUpdateStatus(order._id, "OUT_FOR_DELIVERY")
+                            handleUpdateStatus(order._id, "READY_FOR_PICKUP")
                           }
-                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors shadow-lg shadow-purple-600/20"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors shadow-lg shadow-orange-600/20"
                         >
-                          <Truck size={18} /> Send for Delivery
+                          <ShoppingBag size={18} /> Ready for Pickup
                         </button>
                       )}
 
-                      {["OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"].includes(
-                        order.status,
-                      ) && (
+                      {[
+                        "READY_FOR_PICKUP",
+                        "OUT_FOR_DELIVERY",
+                        "DELIVERED",
+                        "CANCELLED",
+                      ].includes(order.status) && (
                         <div className="w-full flex justify-center py-3 bg-gray-50 rounded-xl text-gray-500 text-sm font-medium border border-gray-100">
                           {order.status === "CANCELLED"
                             ? "Order Cancelled"
