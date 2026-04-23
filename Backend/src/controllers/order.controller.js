@@ -184,6 +184,66 @@ export const getRestaurantOrders = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, orders, "Fetch Orders successfully"));
 });
 
+export const rateOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { restaurantRating, driverRating, review } = req.body;
+
+  if (!restaurantRating) {
+    throw new ApiError(400, "Restaurant rating is required");
+  }
+
+  if (restaurantRating < 1 || restaurantRating > 5) {
+    throw new ApiError(400, "Rating must be between 1 and 5");
+  }
+
+  if (driverRating && (driverRating < 1 || driverRating > 5)) {
+    throw new ApiError(400, "Driver rating must be between 1 and 5");
+  }
+
+  const order = await orderModel.findById(orderId).populate("restaurant");
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+  if (order.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "Not authorized to rate this order");
+  }
+
+  if (order.status !== "DELIVERED") {
+    throw new ApiError(400, "Can only rate delivered orders");
+  }
+
+  if (order.rating?.ratedAt) {
+    throw new ApiError(400, "Order already rated");
+  }
+
+  order.rating = {
+    restaurantRating,
+    driverRating: order.driver ? driverRating || null : null,
+    review: review || "",
+    ratedAt: new Date(),
+  };
+  await order.save();
+
+  const restaurant = order.restaurant;
+  const ratedRestaurantOrders = await orderModel.find({
+    restaurant: restaurant._id,
+    status: "DELIVERED",
+    "rating.restaurantRating": { $ne: null },
+  });
+  const restaurantAvg =
+    ratedRestaurantOrders.reduce(
+      (sum, o) => sum + o.rating.restaurantRating,
+      0,
+    ) / ratedRestaurantOrders.length;
+  await restaurantModel.findByIdAndUpdate(restaurant._id, {
+    rating: Math.round(restaurantAvg * 10) / 10,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, order, "Rating submitted successfully"));
+});
+
 //Driver
 
 export const getAvailableOrders = asyncHandler(async (req, res) => {

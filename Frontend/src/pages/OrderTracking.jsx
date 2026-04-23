@@ -2,23 +2,16 @@ import {
   ArrowLeft,
   CheckCircle,
   ChefHat,
+  ClipboardList,
   Clock,
+  Home,
   MapPin,
-  RefreshCw,
+  Package,
   ShoppingBag,
+  Star,
   Store,
   Truck,
-  User,
   XCircle,
-  Navigation,
-  ChevronRight,
-  Info,
-  Calendar,
-  Package,
-  Home,
-  Phone,
-  Star,
-  ClipboardList,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -167,9 +160,9 @@ const OrderTracking = () => {
       order.statusHistory?.filter((h) => h.status === status).at(-1);
     return entry?.timestamp
       ? new Date(entry.timestamp).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+          hour: "2-digit",
+          minute: "2-digit",
+        })
       : null;
   };
 
@@ -177,10 +170,12 @@ const OrderTracking = () => {
     if (!order.createdAt) return "N/A";
     const createdDate = new Date(order.createdAt);
     const arrivalDate = new Date(createdDate.getTime() + eta * 60000);
-    return arrivalDate.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }) + " Today";
+    return (
+      arrivalDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }) + " Today"
+    );
   };
 
   const getStatusBadge = () => {
@@ -209,7 +204,10 @@ const OrderTracking = () => {
             </h1>
             <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
               <Clock size={16} className="text-orange-500" />
-              <span>Estimated Arrival: <span className="text-[#1E293B]">{getEstimatedArrival()}</span></span>
+              <span>
+                Estimated Arrival:{" "}
+                <span className="text-[#1E293B]">{getEstimatedArrival()}</span>
+              </span>
             </div>
           </div>
           <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
@@ -230,18 +228,21 @@ const OrderTracking = () => {
 
         <div className="px-6 md:px-8 py-8 md:py-10">
           <div className="relative flex flex-col md:flex-row justify-between items-start">
-            {/* Horizontal Line for Desktop */}
             <div className="absolute top-[28px] left-[30px] right-[30px] h-[2px] bg-gray-100 -z-0 hidden md:block" />
-            <div 
+            <div
               className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000 hidden md:block"
-              style={{ width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%` }}
+              style={{
+                width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%`,
+              }}
             />
 
-            {/* Vertical Line for Mobile */}
             <div className="absolute left-[27px] top-[28px] bottom-[28px] w-[2px] bg-gray-100 -z-0 md:hidden" />
-            <div 
+            <div
               className="absolute left-[27px] top-[28px] w-[2px] bg-orange-500 -z-0 transition-all duration-1000 md:hidden"
-              style={{ height: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 100}%`, maxHeight: 'calc(100% - 56px)' }}
+              style={{
+                height: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 100}%`,
+                maxHeight: "calc(100% - 56px)",
+              }}
             />
 
             {TIMELINE_STEPS.map((step, index) => {
@@ -252,31 +253,45 @@ const OrderTracking = () => {
               const timestamp = getTimestamp(step.status);
 
               return (
-                <div key={step.status} className={`relative z-10 flex flex-row md:flex-col items-center md:flex-1 gap-6 md:gap-0 ${index !== TIMELINE_STEPS.length - 1 ? "mb-8 md:mb-0" : ""}`}>
-                  <div 
+                <div
+                  key={step.status}
+                  className={`relative z-10 flex flex-row md:flex-col items-center md:flex-1 gap-6 md:gap-0 ${index !== TIMELINE_STEPS.length - 1 ? "mb-8 md:mb-0" : ""}`}
+                >
+                  <div
                     className={`w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 flex-shrink-0 ${
-                      isDone || isCurrent 
-                        ? "bg-orange-500 text-white" 
+                      isDone || isCurrent
+                        ? "bg-orange-500 text-white"
                         : "bg-white text-gray-300"
                     } ${isCurrent ? "ring-8 ring-orange-500/10 scale-110 shadow-orange-500/20 shadow-2xl" : ""}`}
                   >
                     {isDone ? <CheckCircle size={22} /> : <Icon size={22} />}
                   </div>
-                  
+
                   <div className="md:mt-4 text-left md:text-center">
-                    <p className={`text-[13px] font-black uppercase tracking-tight mb-0.5 ${
-                      isPending ? "text-gray-400" : "text-[#1E293B]"
-                    }`}>
+                    <p
+                      className={`text-[13px] font-black uppercase tracking-tight mb-0.5 ${
+                        isPending ? "text-gray-400" : "text-[#1E293B]"
+                      }`}
+                    >
                       {step.label}
                     </p>
-                    <p className={`text-[10px] font-bold ${
-                      isPending ? "text-gray-300" : "text-gray-400"
-                    }`}>
-                      {timestamp || (isCurrent ? "In progress" : isPending ? "Pending" : "")}
+                    <p
+                      className={`text-[10px] font-bold ${
+                        isPending ? "text-gray-300" : "text-gray-400"
+                      }`}
+                    >
+                      {timestamp ||
+                        (isCurrent
+                          ? "In progress"
+                          : isPending
+                            ? "Pending"
+                            : "")}
                     </p>
-                    <p className={`text-[10px] font-medium mt-1 leading-tight ${
-                      isPending ? "text-gray-200" : "text-gray-400"
-                    }`}>
+                    <p
+                      className={`text-[10px] font-medium mt-1 leading-tight ${
+                        isPending ? "text-gray-200" : "text-gray-400"
+                      }`}
+                    >
                       {step.desc}
                     </p>
                   </div>
@@ -288,23 +303,23 @@ const OrderTracking = () => {
 
         <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative rounded-3xl overflow-hidden min-h-[300px] shadow-inner group">
-            <img 
-              src="/map_bg.png" 
-              alt="Map" 
+            <img
+              src="/map_bg.png"
+              alt="Map"
               className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
             />
-            
+
             <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-4 animate-in slide-in-from-bottom-4 duration-700">
               <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF7ED] rounded-xl flex items-center justify-center text-orange-500 border border-[#FFEDD5] flex-shrink-0">
                 <MapPin size={20} className="md:size-[24px]" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] truncate">
-                  {order.driver?.username || "Mark J."} is your courier
+                  {order.driver?.username} is your courier
                 </p>
                 <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold text-gray-400 mt-0.5">
                   <Star size={10} className="fill-[#F59E0B] text-orange-500" />
-                  <span>5.0</span>
+                  <span>{order.rating.driverRating}</span>
                   <span className="text-gray-200">•</span>
                   <span>1,200+ deliveries</span>
                 </div>
@@ -313,7 +328,7 @@ const OrderTracking = () => {
                 Call
               </button>
             </div>
-            
+
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="relative">
                 <div className="w-12 h-12 bg-orange-500/20 rounded-full animate-ping absolute -inset-0" />
@@ -325,11 +340,16 @@ const OrderTracking = () => {
           </div>
 
           <div className="bg-[#F8FAFC] rounded-3xl p-6 md:p-8 flex flex-col h-full border border-gray-100">
-            <h3 className="text-lg md:text-xl font-black text-[#1E293B] mb-6">Order Summary</h3>
-            
+            <h3 className="text-lg md:text-xl font-black text-[#1E293B] mb-6">
+              Order Summary
+            </h3>
+
             <div className="flex-1 space-y-4 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
               {order.items.map((item) => (
-                <div key={item.menuItemId} className="flex justify-between items-center group">
+                <div
+                  key={item.menuItemId}
+                  className="flex justify-between items-center group"
+                >
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[11px] font-black text-orange-500 flex-shrink-0">
                       {item.quantity}x
@@ -343,10 +363,14 @@ const OrderTracking = () => {
                   </p>
                 </div>
               ))}
-              
+
               <div className="flex justify-between items-center py-4 border-t border-dashed border-gray-200">
-                <p className="text-[12px] md:text-[13px] font-bold text-gray-400">Delivery Fee</p>
-                <p className="text-[12px] md:text-[13px] font-black text-orange-500 uppercase tracking-widest">FREE</p>
+                <p className="text-[12px] md:text-[13px] font-bold text-gray-400">
+                  Delivery Fee
+                </p>
+                <p className="text-[12px] md:text-[13px] font-black text-orange-500 uppercase tracking-widest">
+                  FREE
+                </p>
               </div>
             </div>
 
@@ -367,6 +391,68 @@ const OrderTracking = () => {
                   </span>
                 </div>
               </div>
+
+              {isDelivered && order.rating?.ratedAt && (
+                <div className="mt-5 pt-5 border-t border-gray-100 space-y-3">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                    Your Ratings
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
+                      <Store size={14} className="text-orange-500" />
+                      <span className="text-xs font-bold text-gray-600">
+                        Restaurant
+                      </span>
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            size={12}
+                            className={
+                              s <= order.rating.restaurantRating
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-200"
+                            }
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs font-black text-orange-600">
+                        {order.rating.restaurantRating}/5
+                      </span>
+                    </div>
+
+                    {order.rating.driverRating && (
+                      <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
+                        <Truck size={14} className="text-blue-500" />
+                        <span className="text-xs font-bold text-gray-600">
+                          Driver
+                        </span>
+                        <div className="flex gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={12}
+                              className={
+                                s <= order.rating.driverRating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-200"
+                              }
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs font-black text-blue-600">
+                          {order.rating.driverRating}/5
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {order.rating.review && (
+                    <p className="text-xs text-gray-400 italic">
+                      "{order.rating.review}"
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

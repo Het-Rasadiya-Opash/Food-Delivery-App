@@ -118,6 +118,29 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    rating: {
+      restaurantRating: {
+        type: Number,
+        min: 1,
+        max: 5,
+        default: null,
+      },
+      driverRating: {
+        type: Number,
+        min: 1,
+        max: 5,
+        default: null,
+      },
+      review: {
+        type: String,
+        default: "",
+      },
+      ratedAt: {
+        type: Date,
+        default: null,
+      },
+    },
   },
   { timestamps: true },
 );
