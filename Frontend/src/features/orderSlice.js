@@ -47,7 +47,9 @@ const orderSlice = createSlice({
     },
     updateRestaurantOrder: (state, action) => {
       const updated = action.payload;
-      const idx = state.restaurantOrders.findIndex((o) => o._id === updated._id);
+      const idx = state.restaurantOrders.findIndex(
+        (o) => o._id === updated._id,
+      );
       if (idx !== -1) state.restaurantOrders[idx] = updated;
     },
     setRestaurantOrderLoading: (state, action) => {

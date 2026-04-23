@@ -84,7 +84,7 @@ export const getOrderById = asyncHandler(async (req, res) => {
   const order = await orderModel
     .findById(orderId)
     .populate("restaurant", "name images address")
-    .populate("driver", "username");
+    .populate("driver", "username rating totalRatings");
 
   if (!order) throw new ApiError(404, "Order not found");
 

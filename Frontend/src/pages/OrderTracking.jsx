@@ -316,9 +316,24 @@ const OrderTracking = () => {
               <div className="flex-1 min-w-0">
                 {order.status === "OUT_FOR_DELIVERY" ||
                 order.status === "DELIVERED" ? (
-                  <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] truncate">
-                    {order.driver?.username} is your courier
-                  </p>
+                  <div className="flex flex-col">
+                    <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] truncate flex items-center gap-2">
+                      {order.driver?.username} is your courier
+                    </p>
+                    {order.driver?.rating > 0 && (
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="flex items-center gap-0.5 text-orange-500">
+                          <Star size={12} fill="currentColor" />
+                          <span className="text-[11px] font-black text-gray-700">
+                            {order.driver.rating.toFixed(1)}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold text-gray-400">
+                          ({order.driver.totalRatings || 0} reviews)
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <p className="text-[12px] md:text-[13px] font-black text-[#1E293B]">
                     Waiting for Pickup
