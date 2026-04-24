@@ -245,9 +245,16 @@ export const claimOrder = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Order already claimed by another driver");
   }
 
+  if (!req.user.isAvailable) {
+    throw new ApiError(400, "You are already handling an order");
+  }
+
   order.driver = req.user._id;
   // Keep status as READY_FOR_PICKUP so driver can explicitly "Pickup" later
   await order.save();
+
+  // Mark driver as unavailable
+  await userModel.findByIdAndUpdate(req.user._id, { isAvailable: false });
 
   const updatedOrder = await orderModel
     .findById(orderId)
@@ -292,6 +299,11 @@ export const updateDriverStatus = asyncHandler(async (req, res) => {
   order.status = status;
   order.statusHistory.push({ status });
   await order.save();
+
+  // If delivered, mark driver as available
+  if (status === "DELIVERED") {
+    await userModel.findByIdAndUpdate(req.user._id, { isAvailable: true });
+  }
 
   const updatedOrder = await orderModel
     .findById(orderId)
