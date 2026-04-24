@@ -7,9 +7,10 @@ cd backend
 ```
 npm install
 ```
+server start
 
 ```
-start server = npm run dev
+npm run dev
 ```
 
 
@@ -22,9 +23,9 @@ cd frontend
 ```
 npm install
 ```
-
+server start
 ```
-start server = npm run dev
+npm run dev
 ```
 
 
