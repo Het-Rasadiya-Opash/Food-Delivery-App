@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import apiRequest from "../utils/apiRequest";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CategorySection = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -86,7 +88,11 @@ const CategorySection = () => {
                 </div>
               ))
           : categories.map((category, index) => (
-              <div key={index} className="flex-shrink-0 group cursor-pointer">
+              <div
+                key={index}
+                className="flex-shrink-0 group cursor-pointer"
+                onClick={() => navigate(`/category/${category.category}`)}
+              >
                 <div className="relative mb-3 transition-transform duration-300 group-hover:scale-105">
                   <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-lg border-2 border-transparent group-hover:border-orange-500/50 transition-colors">
                     <img

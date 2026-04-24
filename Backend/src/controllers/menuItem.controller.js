@@ -134,5 +134,7 @@ export const getCategoryByRestaurant = asyncHandler(async (req, res) => {
     })
     .populate("restaurant");
 
-    return res.status(200).json(new ApiResponse(200,categoryRestaurant,"Fetch categoryRestaurant"))
+  return res
+    .status(200)
+    .json(new ApiResponse(200, categoryRestaurant, "Fetch categoryRestaurant"));
 });

@@ -260,17 +260,17 @@ const OrderTracking = () => {
             <div className="absolute top-[28px] left-[30px] right-[30px] h-[2px] bg-gray-100 -z-0 hidden md:block" />
             <div
               className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000 hidden md:block"
-              style={{
-                width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%`,
-              }}
+              // style={{
+              //   width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%`,
+              // }}
             />
             <div className="absolute left-[27px] top-[28px] bottom-[28px] w-[2px] bg-gray-100 -z-0 md:hidden" />
             <div
               className="absolute left-[27px] top-[28px] w-[2px] bg-orange-500 -z-0 transition-all duration-1000 md:hidden"
-              style={{
-                height: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 100}%`,
-                maxHeight: "calc(100% - 56px)",
-              }}
+              // style={{
+              //   height: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 100}%`,
+              //   maxHeight: "calc(100% - 56px)",
+              // }}
             />
 
             {TIMELINE_STEPS.map((step, index) => {

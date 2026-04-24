@@ -20,6 +20,7 @@ import MyOrders from "./pages/MyOrders";
 import OrderTracking from "./pages/OrderTracking";
 import RestaurantOrderQueue from "./pages/RestaurantOrderQueue";
 import DriverDashboard from "./pages/DriverDashboard";
+import CategoryResults from "./pages/CategoryResults";
 import Footer from "./components/Footer";
 
 const App = () => {
@@ -55,6 +56,10 @@ const App = () => {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/category/:categoryName"
+            element={<CategoryResults />}
+          />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
