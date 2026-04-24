@@ -105,6 +105,9 @@ const DriverDashboard = () => {
   }, [tab]);
 
   useEffect(() => {
+    if (currentUser?._id) {
+      socket.emit("join_user_room", currentUser._id);
+    }
     socket.emit("join_drivers_room");
 
     socket.on("order_ready", (newOrder) => {
@@ -112,10 +115,20 @@ const DriverDashboard = () => {
       dispatch(setAvailableOrders([newOrder, ...availableOrders]));
     });
 
+    socket.on("order_assigned", (assignedOrder) => {
+      console.log("Order auto-dispatched to you:", assignedOrder);
+      dispatch(setOrders([assignedOrder, ...myOrders]));
+      setTab("my-orders");
+      alert(
+        `New order assigned: #${assignedOrder._id.slice(-6).toUpperCase()}`,
+      );
+    });
+
     return () => {
       socket.off("order_ready");
+      socket.off("order_assigned");
     };
-  }, [availableOrders, dispatch]);
+  }, [availableOrders, myOrders, dispatch, currentUser]);
 
   const handleClaim = async (orderId) => {
     try {

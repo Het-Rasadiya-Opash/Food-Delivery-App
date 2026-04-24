@@ -1,11 +1,16 @@
 import { Server } from "socket.io";
+import userModel from "./models/user.model.js";
 
 let io;
 
 export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174"],
+      origin: [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+      ],
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -29,10 +34,36 @@ export const initSocket = (server) => {
       console.log("Driver joined drivers room");
     });
 
-    socket.on("update_driver_location", ({ orderId, location }) => {
-      io.to(`order_${orderId}`).emit("driver_location_updated", { orderId, location });
-      console.log(`Driver updated location for order ${orderId}:`, location);
+    socket.on("join_user_room", (userId) => {
+      socket.join(`user_${userId}`);
+      socket.userId = userId;
+      console.log(`User joined private room: user_${userId}`);
     });
+
+    socket.on(
+      "update_driver_location",
+      async ({ orderId, location, userId }) => {
+        const id = userId || socket.userId;
+
+        io.to(`order_${orderId}`).emit("driver_location_updated", {
+          orderId,
+          location,
+        });
+
+        if (id && location?.lat && location?.lng) {
+          try {
+            await userModel.findByIdAndUpdate(id, {
+              "address.location": {
+                type: "Point",
+                coordinates: [location.lng, location.lat],
+              },
+            });
+          } catch (error) {
+            console.error("Failed to update driver location in DB:", error);
+          }
+        }
+      },
+    );
 
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
@@ -67,5 +98,12 @@ export const emitOrderReady = (orderData) => {
   if (io) {
     io.to("drivers").emit("order_ready", orderData);
     console.log("Emitted order_ready to all drivers");
+  }
+};
+
+export const emitOrderAssigned = (driverId, orderData) => {
+  if (io) {
+    io.to(`user_${driverId}`).emit("order_assigned", orderData);
+    console.log(`Emitted order_assigned to driver: ${driverId}`);
   }
 };

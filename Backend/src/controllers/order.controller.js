@@ -5,7 +5,12 @@ import userModel from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { emitOrderUpdate, emitNewOrder, emitOrderReady } from "../socket.js";
+import {
+  emitOrderUpdate,
+  emitNewOrder,
+  emitOrderReady,
+  emitOrderAssigned,
+} from "../socket.js";
 
 export const placeOrder = asyncHandler(async (req, res) => {
   const { restaurantId, items, deliveryAddress, paymentMethod, deliveryNotes } =
@@ -183,6 +188,40 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   emitOrderUpdate(orderId, updatedOrder);
 
   if (status === "READY_FOR_PICKUP") {
+    const restaurantLocation = order.restaurant?.address?.location;
+    if (restaurantLocation && restaurantLocation.coordinates) {
+      const [lng, lat] = restaurantLocation.coordinates;
+      const nearestDriver = await userModel.findOne({
+        role: "Driver",
+        isAvailable: true,
+        "address.location": {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
+          },
+        },
+      });
+
+      if (nearestDriver) {
+        order.driver = nearestDriver._id;
+        nearestDriver.isAvailable = false;
+        await Promise.all([order.save(), nearestDriver.save()]);
+
+        const assignedOrder = await orderModel
+          .findById(orderId)
+          .populate("restaurant", "name images address")
+          .populate("user", "username address")
+          .populate("driver", "username rating totalRatings");
+
+        emitOrderAssigned(nearestDriver._id, assignedOrder);
+        console.log(
+          `Auto-dispatched order ${orderId} to nearest driver: ${nearestDriver.username}`,
+        );
+      }
+    }
+
     const populatedOrder = await orderModel
       .findById(orderId)
       .populate("restaurant", "name address");
