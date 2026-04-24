@@ -241,7 +241,6 @@ const DriverDashboard = () => {
           </div>
         )}
 
-        {/* Tabs */}
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {TABS.map((t) => (
             <button

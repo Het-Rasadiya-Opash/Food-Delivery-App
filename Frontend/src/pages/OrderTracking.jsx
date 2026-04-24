@@ -98,9 +98,18 @@ const OrderTracking = () => {
 
   const createIcon = (icon, color) => {
     const iconMarkup = renderToStaticMarkup(
-      <div style={{ color: color, backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 4px 10px rgba(0,0,0,0.2)', border: `2px solid ${color}` }}>
+      <div
+        style={{
+          color: color,
+          backgroundColor: "white",
+          padding: "8px",
+          borderRadius: "50%",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+          border: `2px solid ${color}`,
+        }}
+      >
         {icon}
-      </div>
+      </div>,
     );
     return L.divIcon({
       html: iconMarkup,
@@ -358,14 +367,20 @@ const OrderTracking = () => {
 
         <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative rounded-3xl overflow-hidden min-h-[400px] shadow-inner group border border-gray-100">
-            {order.status === "OUT_FOR_DELIVERY" || order.status === "DELIVERED" || order.status === "READY_FOR_PICKUP" ? (
+            {order.status === "OUT_FOR_DELIVERY" ||
+            order.status === "DELIVERED" ||
+            order.status === "READY_FOR_PICKUP" ? (
               //restaurant mark
               <MapContainer
                 center={
-                  driverLocation || 
-                  (order.restaurant?.address?.location?.coordinates?.length === 2 
-                    ? { lat: order.restaurant.address.location.coordinates[1], lng: order.restaurant.address.location.coordinates[0] }
-                    : [21.1702, 72.8311]) 
+                  driverLocation ||
+                  (order.restaurant?.address?.location?.coordinates?.length ===
+                  2
+                    ? {
+                        lat: order.restaurant.address.location.coordinates[1],
+                        lng: order.restaurant.address.location.coordinates[0],
+                      }
+                    : [21.1702, 72.8311])
                 }
                 zoom={15}
                 style={{ height: "100%", width: "100%" }}
@@ -375,10 +390,14 @@ const OrderTracking = () => {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-                
-                {order.restaurant?.address?.location?.coordinates?.length === 2 && (
-                  <Marker 
-                    position={[order.restaurant.address.location.coordinates[1], order.restaurant.address.location.coordinates[0]]} 
+
+                {order.restaurant?.address?.location?.coordinates?.length ===
+                  2 && (
+                  <Marker
+                    position={[
+                      order.restaurant.address.location.coordinates[1],
+                      order.restaurant.address.location.coordinates[0],
+                    ]}
                     icon={restaurantIcon}
                   >
                     <Popup>Restaurant: {order.restaurant.name}</Popup>
@@ -386,18 +405,26 @@ const OrderTracking = () => {
                 )}
 
                 {driverLocation && (
-                  <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
+                  <Marker
+                    position={[driverLocation.lat, driverLocation.lng]}
+                    icon={driverIcon}
+                  >
                     <Popup>Driver is here</Popup>
                   </Marker>
                 )}
 
-          
-                <Marker 
+                <Marker
                   position={
-                    order.restaurant?.address?.location?.coordinates?.length === 2
-                      ? [order.restaurant.address.location.coordinates[1] + 0.01, order.restaurant.address.location.coordinates[0] + 0.01]
+                    order.restaurant?.address?.location?.coordinates?.length ===
+                    2
+                      ? [
+                          order.restaurant.address.location.coordinates[1] +
+                            0.01,
+                          order.restaurant.address.location.coordinates[0] +
+                            0.01,
+                        ]
                       : [21.1802, 72.8411]
-                  } 
+                  }
                   icon={customerIcon}
                 >
                   <Popup>Your Location</Popup>
@@ -410,7 +437,9 @@ const OrderTracking = () => {
                 <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mb-4">
                   <Clock size={40} className="text-gray-200" />
                 </div>
-                <p className="font-bold uppercase tracking-widest text-xs">Map will be available once driver picks up your order</p>
+                <p className="font-bold uppercase tracking-widest text-xs">
+                  Map will be available once driver picks up your order
+                </p>
               </div>
             )}
 
