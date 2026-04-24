@@ -250,10 +250,9 @@ export const claimOrder = asyncHandler(async (req, res) => {
   }
 
   order.driver = req.user._id;
-  // Keep status as READY_FOR_PICKUP so driver can explicitly "Pickup" later
+
   await order.save();
 
-  // Mark driver as unavailable
   await userModel.findByIdAndUpdate(req.user._id, { isAvailable: false });
 
   const updatedOrder = await orderModel
@@ -300,7 +299,6 @@ export const updateDriverStatus = asyncHandler(async (req, res) => {
   order.statusHistory.push({ status });
   await order.save();
 
-  // If delivered, mark driver as available
   if (status === "DELIVERED") {
     await userModel.findByIdAndUpdate(req.user._id, { isAvailable: true });
   }
@@ -330,8 +328,7 @@ export const getMyDriverOrders = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, orders, "Driver orders fetched"));
 });
 
-
-//review 
+//review
 export const rateOrder = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
   const { restaurantRating, driverRating } = req.body;
