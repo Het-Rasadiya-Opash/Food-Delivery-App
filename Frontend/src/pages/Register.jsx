@@ -84,7 +84,7 @@ const Register = () => {
       <div className="hidden lg:flex lg:w-1/2 relative bg-orange-600">
         <div className="absolute inset-0 bg-black/30 z-10"></div>
         <img
-          src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
+          src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80"
           alt="Delicious food"
           className="absolute inset-0 w-full h-full object-cover"
         />
