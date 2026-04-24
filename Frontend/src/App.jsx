@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser, setCheckingAuth } from "./features/usersSlice";
 import { clearCart } from "./features/cartSlice";
 import apiRequest from "./utils/apiRequest";
@@ -22,9 +22,11 @@ import RestaurantOrderQueue from "./pages/RestaurantOrderQueue";
 import DriverDashboard from "./pages/DriverDashboard";
 import CategoryResults from "./pages/CategoryResults";
 import Footer from "./components/Footer";
+import { ShoppingBag } from "lucide-react";
 
 const App = () => {
   const dispatch = useDispatch();
+  const { isCheckingAuth } = useSelector((state) => state.users);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,6 +45,27 @@ const App = () => {
     };
     checkAuth();
   }, [dispatch]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white gap-6">
+        <div className="relative">
+          <div className="w-20 h-20 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <ShoppingBag size={24} className="text-orange-500 animate-pulse" />
+          </div>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <h2 className="text-xl font-black text-gray-900 tracking-tight">
+            Setting up your kitchen...
+          </h2>
+          <p className="text-gray-400 text-sm font-medium animate-pulse">
+            Verifying your session
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-900">
