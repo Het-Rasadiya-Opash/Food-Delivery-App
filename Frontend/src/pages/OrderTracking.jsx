@@ -305,20 +305,9 @@ const OrderTracking = () => {
         <div className="px-6 md:px-8 py-8 md:py-10">
           <div className="relative flex flex-col md:flex-row justify-between items-start">
             <div className="absolute top-[28px] left-[30px] right-[30px] h-[2px] bg-gray-100 -z-0 hidden md:block" />
-            <div
-              className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000 hidden md:block"
-              // style={{
-              //   width: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 94}%`,
-              // }}
-            />
+            <div className="absolute top-[28px] left-[30px] h-[2px] bg-orange-500 -z-0 transition-all duration-1000 hidden md:block" />
             <div className="absolute left-[27px] top-[28px] bottom-[28px] w-[2px] bg-gray-100 -z-0 md:hidden" />
-            <div
-              className="absolute left-[27px] top-[28px] w-[2px] bg-orange-500 -z-0 transition-all duration-1000 md:hidden"
-              // style={{
-              //   height: `${(currentStepIndex / (TIMELINE_STEPS.length - 1)) * 100}%`,
-              //   maxHeight: "calc(100% - 56px)",
-              // }}
-            />
+            <div className="absolute left-[27px] top-[28px] w-[2px] bg-orange-500 -z-0 transition-all duration-1000 md:hidden" />
 
             {TIMELINE_STEPS.map((step, index) => {
               const Icon = step.icon;
@@ -483,14 +472,6 @@ const OrderTracking = () => {
               <button className="px-4 md:px-5 py-2 bg-orange-500 text-white rounded-xl text-[10px] md:text-xs font-black hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 active:scale-95 flex-shrink-0">
                 Call
               </button>
-            </div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-              <div className="relative">
-                <div className="w-12 h-12 bg-orange-500/20 rounded-full animate-ping absolute -inset-0" />
-                <div className="w-12 h-12 bg-white rounded-full shadow-2xl flex items-center justify-center relative border-4 border-orange-500">
-                  <Truck size={20} className="text-orange-500" />
-                </div>
-              </div>
             </div>
           </div>
 
