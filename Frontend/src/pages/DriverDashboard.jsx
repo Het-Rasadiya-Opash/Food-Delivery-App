@@ -143,32 +143,36 @@ const DriverDashboard = () => {
 
   useEffect(() => {
     const activeOrder = myOrders.find((o) => o.status === "OUT_FOR_DELIVERY");
-    let watchId = null;
+    let intervalId = null;
 
     if (activeOrder && navigator.geolocation) {
-      console.log(`Starting location tracking for order: ${activeOrder._id}`);
-      watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          socket.emit("update_driver_location", {
-            orderId: activeOrder._id,
-            location: { lat: latitude, lng: longitude },
-          });
-        },
-        (error) => {
-          console.error("Error watching position:", error);
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 10000,
-          timeout: 5000,
-        },
+      console.log(
+        `Starting 3s location tracking for order: ${activeOrder._id}`,
       );
+      intervalId = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            socket.emit("update_driver_location", {
+              orderId: activeOrder._id,
+              location: { lat: latitude, lng: longitude },
+            });
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 2000,
+          },
+        );
+      }, 3000);
     }
 
     return () => {
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
+      if (intervalId) {
+        clearInterval(intervalId);
         console.log("Stopped location tracking");
       }
     };
@@ -466,6 +470,17 @@ const DriverDashboard = () => {
                           {order.totalPrice?.toFixed(2)}
                         </div>
                       </div>
+
+                      {order.status === "READY_FOR_PICKUP" && (
+                        <button
+                          onClick={() =>
+                            handleStatusUpdate(order._id, "OUT_FOR_DELIVERY")
+                          }
+                          className="w-full flex items-center justify-center gap-2 py-4 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-2xl transition-all shadow-lg shadow-orange-600/20 active:scale-[0.98]"
+                        >
+                          <ShoppingBag size={20} /> Pick up from Restaurant
+                        </button>
+                      )}
 
                       {order.status === "OUT_FOR_DELIVERY" && (
                         <button

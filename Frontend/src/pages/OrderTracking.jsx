@@ -368,8 +368,7 @@ const OrderTracking = () => {
         <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative rounded-3xl overflow-hidden min-h-[400px] shadow-inner group border border-gray-100">
             {order.status === "OUT_FOR_DELIVERY" ||
-            order.status === "DELIVERED" ||
-            order.status === "READY_FOR_PICKUP" ? (
+            order.status === "DELIVERED" ? (
               //restaurant mark
               <MapContainer
                 center={
@@ -430,12 +429,22 @@ const OrderTracking = () => {
                 {driverLocation && <RecenterMap location={driverLocation} />}
               </MapContainer>
             ) : (
-              <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 p-8 text-center">
-                <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mb-4">
-                  <Clock size={40} className="text-gray-200" />
+              <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 p-8 text-center animate-in fade-in duration-500">
+                <div className="relative mb-6">
+                  <div className="w-24 h-24 bg-white rounded-full shadow-sm flex items-center justify-center relative z-10">
+                    <Truck size={48} className="text-orange-200" />
+                  </div>
+                  <div className="absolute inset-0 bg-orange-100 rounded-full animate-ping scale-75 opacity-20" />
                 </div>
-                <p className="font-bold uppercase tracking-widest text-xs">
-                  Map will be available once driver picks up your order
+                <h4 className="text-gray-900 font-black text-lg mb-2">
+                  {order.status === "READY_FOR_PICKUP" && order.driver
+                    ? "Driver is at the Restaurant"
+                    : "Preparing your Order"}
+                </h4>
+                <p className="text-gray-500 text-sm max-w-[240px] mx-auto font-medium">
+                  {order.status === "READY_FOR_PICKUP" && order.driver
+                    ? "Your courier is collecting your food. Live tracking will start once they're on the way!"
+                    : "The restaurant is preparing your food. We'll show you the live map once it's picked up."}
                 </p>
               </div>
             )}

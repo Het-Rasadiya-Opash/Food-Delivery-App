@@ -246,11 +246,7 @@ export const claimOrder = asyncHandler(async (req, res) => {
   }
 
   order.driver = req.user._id;
-  order.status = "OUT_FOR_DELIVERY";
-  order.statusHistory.push({
-    status: "OUT_FOR_DELIVERY",
-    note: "Picked up by driver",
-  });
+  // Keep status as READY_FOR_PICKUP so driver can explicitly "Pickup" later
   await order.save();
 
   const updatedOrder = await orderModel
@@ -271,6 +267,7 @@ export const updateDriverStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
 
   const DRIVER_TRANSITIONS = {
+    READY_FOR_PICKUP: "OUT_FOR_DELIVERY",
     OUT_FOR_DELIVERY: "DELIVERED",
   };
 
