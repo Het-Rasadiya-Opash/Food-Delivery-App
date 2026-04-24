@@ -283,7 +283,7 @@ export const claimOrder = asyncHandler(async (req, res) => {
   if (order.driver) {
     throw new ApiError(400, "Order already claimed by another driver");
   }
-
+console.log(req.user)
   if (!req.user.isAvailable) {
     throw new ApiError(400, "You are already handling an order");
   }

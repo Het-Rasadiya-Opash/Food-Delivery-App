@@ -70,6 +70,7 @@ userSchema.methods.generateToken = function () {
       email: this.email,
       username: this.username,
       role: this.role,
+      isAvailable: this.isAvailable,
     },
     process.env.JWT_SECRET,
     {

@@ -322,7 +322,7 @@ const OrderTracking = () => {
                   className={`relative z-10 flex flex-row md:flex-col items-center md:flex-1 gap-6 md:gap-0 ${index !== TIMELINE_STEPS.length - 1 ? "mb-8 md:mb-0" : ""}`}
                 >
                   <div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 flex-shrink-0 ${isDone || isCurrent ? "bg-orange-500 text-white" : "bg-white text-gray-300"} ${isCurrent ? "ring-8 ring-orange-500/10 scale-110 shadow-orange-500/20 shadow-2xl" : ""}`}
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 flex-shrink-0 ${isDone || isCurrent ? "bg-orange-500 text-white" : "bg-white text-gray-300"} `}
                   >
                     {isDone ? <CheckCircle size={22} /> : <Icon size={22} />}
                   </div>

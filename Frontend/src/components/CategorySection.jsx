@@ -45,7 +45,7 @@ const CategorySection = () => {
             Order our best food options
           </h2>
         </div>
-        {!loading && categories.length > 0 && (
+        {/* {!loading && categories.length > 0 && (
           <div className="flex gap-2">
             <button
               onClick={scrollLeft}
@@ -62,7 +62,7 @@ const CategorySection = () => {
               <ChevronRight size={24} />
             </button>
           </div>
-        )}
+        )} */}
       </div>
 
       <div
