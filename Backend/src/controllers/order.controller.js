@@ -5,6 +5,7 @@ import userModel from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { emitOrderUpdate, emitNewOrder, emitOrderReady } from "../socket.js";
 
 export const placeOrder = asyncHandler(async (req, res) => {
   const { restaurantId, items, deliveryAddress, paymentMethod, deliveryNotes } =
@@ -62,6 +63,9 @@ export const placeOrder = asyncHandler(async (req, res) => {
     deliveryNotes: deliveryNotes || "",
   });
 
+  const populatedOrder = await orderModel.findById(order._id).populate("user");
+  emitNewOrder(restaurantId, populatedOrder);
+
   return res
     .status(201)
     .json(new ApiResponse(201, order, "Order placed successfully"));
@@ -117,6 +121,13 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   order.statusHistory.push({ status: "CANCELLED", note: cancelReason });
   await order.save();
 
+  const updatedOrder = await orderModel
+    .findById(orderId)
+    .populate("restaurant", "name images address")
+    .populate("driver", "username rating totalRatings");
+
+  emitOrderUpdate(orderId, updatedOrder);
+
   return res
     .status(200)
     .json(new ApiResponse(200, order, "Order cancelled successfully"));
@@ -155,6 +166,20 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   }
 
   await order.save();
+
+  const updatedOrder = await orderModel
+    .findById(orderId)
+    .populate("restaurant", "name images address")
+    .populate("driver", "username rating totalRatings");
+
+  emitOrderUpdate(orderId, updatedOrder);
+
+  if (status === "READY_FOR_PICKUP") {
+    const populatedOrder = await orderModel
+      .findById(orderId)
+      .populate("restaurant", "name address");
+    emitOrderReady(populatedOrder);
+  }
 
   return res
     .status(200)
@@ -220,6 +245,13 @@ export const claimOrder = asyncHandler(async (req, res) => {
   });
   await order.save();
 
+  const updatedOrder = await orderModel
+    .findById(orderId)
+    .populate("restaurant", "name images address")
+    .populate("driver", "username rating totalRatings");
+
+  emitOrderUpdate(orderId, updatedOrder);
+
   return res
     .status(200)
     .json(new ApiResponse(200, order, "Order claimed successfully"));
@@ -254,6 +286,13 @@ export const updateDriverStatus = asyncHandler(async (req, res) => {
   order.status = status;
   order.statusHistory.push({ status });
   await order.save();
+
+  const updatedOrder = await orderModel
+    .findById(orderId)
+    .populate("restaurant", "name images address")
+    .populate("driver", "username rating totalRatings");
+
+  emitOrderUpdate(orderId, updatedOrder);
 
   return res
     .status(200)

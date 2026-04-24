@@ -7,6 +7,7 @@ import {
   setMenuItemLoading,
   setMenuItemError,
   removeMenuItem,
+  clearMenuItems,
 } from "../features/menuItemSlice";
 import { addToCart } from "../features/cartSlice";
 import { 
@@ -34,12 +35,15 @@ const AllMenuItems = () => {
   const isOwner =
     currentUser?._id === (restaurant?.owner || selectedRestaurant?.owner);
 
+
   useEffect(() => {
     if (!restaurantId) return;
     const fetchAllMenus = async () => {
       try {
+        dispatch(clearMenuItems());
         dispatch(setMenuItemLoading(true));
         const res = await apiRequest.get(`/menuItems/${restaurantId}`);
+        console.log(res.data.data)
         dispatch(setMenuItems(res.data.data));
       } catch (err) {
         dispatch(
@@ -53,6 +57,8 @@ const AllMenuItems = () => {
     };
     fetchAllMenus();
   }, [dispatch, restaurantId]);
+
+  console.log(menuItems)
 
   const handleAddToCart = (item) => {
     dispatch(

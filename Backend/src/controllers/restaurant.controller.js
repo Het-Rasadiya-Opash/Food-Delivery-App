@@ -52,8 +52,8 @@ export const createRestaurant = asyncHandler(async (req, res) => {
 export const getAllRestaurants = asyncHandler(async (req, res) => {
   const restaurants = await restaurantModel.find();
   return res
-    .status(201)
-    .json(new ApiResponse(201, restaurants, "Restaurants fetch successfully"));
+    .status(200)
+    .json(new ApiResponse(200, restaurants, "Restaurants fetch successfully"));
 });
 
 export const getRestaurantById = asyncHandler(async (req, res) => {
@@ -65,8 +65,8 @@ export const getRestaurantById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Restaurant not found for restaurantId ");
   }
   return res
-    .status(201)
-    .json(new ApiResponse(201, restaurant, "Restaurant fetch successfully"));
+    .status(200)
+    .json(new ApiResponse(200, restaurant, "Restaurant fetch successfully"));
 });
 
 export const getOwnerRestaurant = asyncHandler(async (req, res) => {
@@ -74,9 +74,9 @@ export const getOwnerRestaurant = asyncHandler(async (req, res) => {
   const ownerRestaurant = await restaurantModel.findOne({ owner: ownerId });
  
   return res
-    .status(201)
+    .status(200)
     .json(
-      new ApiResponse(201, ownerRestaurant, "Restaurant fetch successfully"),
+      new ApiResponse(200, ownerRestaurant, "Restaurant fetch successfully"),
     );
 });
 

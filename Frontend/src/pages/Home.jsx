@@ -1,6 +1,7 @@
 import React from "react";
 import AllRestaurants from "../components/AllRestaurants";
 import { Search, MapPin, ArrowRight } from "lucide-react";
+import CategorySection from "../components/CategorySection";
 
 const Home = () => {
   return (
@@ -51,6 +52,9 @@ const Home = () => {
         </div>
       </div>
 
+      <div>
+        <CategorySection />
+      </div>
       <div id="restaurants">
         <AllRestaurants />
       </div>

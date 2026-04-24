@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
+import socket from "../socket";
 import {
   setRestaurantOrders,
   updateRestaurantOrder,
@@ -122,6 +123,21 @@ const RestaurantOrderQueue = () => {
   useEffect(() => {
     fetchOrders(true);
   }, [restaurantId, dispatch]);
+
+  useEffect(() => {
+    if (restaurantId) {
+      socket.emit("join_restaurant_room", restaurantId);
+
+      socket.on("new_order", (newOrder) => {
+        console.log("New order received via socket:", newOrder);
+        dispatch(setRestaurantOrders([newOrder, ...orders]));
+      });
+
+      return () => {
+        socket.off("new_order");
+      };
+    }
+  }, [restaurantId, orders, dispatch]);
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {

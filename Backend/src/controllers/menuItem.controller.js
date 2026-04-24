@@ -10,7 +10,7 @@ export const createMenu = asyncHandler(async (req, res) => {
   const { name, description, price, category, isAvailable } = req.body;
 
   if (!name || !price) {
-    throw new ApiError("Name and Price Are required");
+    throw new ApiError(400, "Name and Price are required");
   }
 
   const restaurant = await restaurantModel.findById(restaurantId);
@@ -53,7 +53,7 @@ export const getAllMenusForRestaurants = asyncHandler(async (req, res) => {
   });
   return res
     .status(200)
-    .json(new ApiResponse(201, menuItems, "Menu item fetch successfully"));
+    .json(new ApiResponse(200, menuItems, "Menu item fetch successfully"));
 });
 
 export const editMenu = asyncHandler(async (req, res) => {
@@ -83,7 +83,7 @@ export const editMenu = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(201, menuItem, "MenuItem Upated Successfully"));
+    .json(new ApiResponse(200, menuItem, "MenuItem Upated Successfully"));
 });
 
 export const deleteMenu = asyncHandler(async (req, res) => {
@@ -97,4 +97,42 @@ export const deleteMenu = asyncHandler(async (req, res) => {
   await menuItem.deleteOne();
 
   res.status(200).json(new ApiResponse(200, "MenuItem Deleted Successfully"));
+});
+
+export const getCategory = asyncHandler(async (req, res) => {
+  const uniqueCategories = await menuItemModel.aggregate([
+    {
+      $match: {
+        category: { $ne: null, $exists: true },
+      },
+    },
+    {
+      $group: {
+        _id: "$category",
+        image: { $first: "$image" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category: "$_id",
+        image: 1,
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, uniqueCategories, "Fetch All Categories"));
+});
+
+export const getCategoryByRestaurant = asyncHandler(async (req, res) => {
+  const { category } = req.params;
+  const categoryRestaurant = await menuItemModel
+    .find({
+      category,
+    })
+    .populate("restaurant");
+
+    return res.status(200).json(new ApiResponse(200,categoryRestaurant,"Fetch categoryRestaurant"))
 });

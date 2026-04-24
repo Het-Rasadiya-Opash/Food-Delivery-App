@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiRequest from "../utils/apiRequest";
+import socket from "../socket";
 import {
   Truck,
   MapPin,
@@ -102,6 +103,19 @@ const DriverDashboard = () => {
     if (tab === "available") fetchAvailable();
     else fetchMyOrders();
   }, [tab]);
+
+  useEffect(() => {
+    socket.emit("join_drivers_room");
+
+    socket.on("order_ready", (newOrder) => {
+      console.log("New order ready for pickup:", newOrder);
+      dispatch(setAvailableOrders([newOrder, ...availableOrders]));
+    });
+
+    return () => {
+      socket.off("order_ready");
+    };
+  }, [availableOrders, dispatch]);
 
   const handleClaim = async (orderId) => {
     try {

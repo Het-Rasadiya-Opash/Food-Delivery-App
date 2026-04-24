@@ -9,8 +9,12 @@ import {
   deleteMenu,
   editMenu,
   getAllMenusForRestaurants,
+  getCategory,
+  getCategoryByRestaurant,
 } from "../controllers/menuItem.controller.js";
 
+router.get("/categories", getCategory);
+router.get("/category/:category", getCategoryByRestaurant);
 router.get("/:restaurantId", getAllMenusForRestaurants);
 
 router.post(

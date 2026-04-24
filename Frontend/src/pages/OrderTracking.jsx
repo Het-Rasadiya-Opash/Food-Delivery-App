@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import socket from "../socket";
 import apiRequest from "../utils/apiRequest";
 import {
   setCurrentOrder,
@@ -107,14 +108,18 @@ const OrderTracking = () => {
 
   useEffect(() => {
     fetchOrder();
-  }, [orderId]);
 
-  useEffect(() => {
-    if (!order) return;
-    if (["DELIVERED", "CANCELLED"].includes(order.status)) return;
-    const interval = setInterval(() => fetchOrder(false), 15000);
-    return () => clearInterval(interval);
-  }, [order?.status, orderId]);
+    socket.emit("join_order_room", orderId);
+
+    socket.on("order_updated", (updatedOrder) => {
+      console.log("Order updated via socket:", updatedOrder);
+      dispatch(setCurrentOrder(updatedOrder));
+    });
+
+    return () => {
+      socket.off("order_updated");
+    };
+  }, [orderId, dispatch]);
 
   if (loading && !order) {
     return (
