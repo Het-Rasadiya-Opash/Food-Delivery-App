@@ -203,10 +203,7 @@ const AllMenuItems = () => {
                         <span className="text-xs font-bold text-gray-400 italic">Unavailable</span>
                       )}
                       
-                      <div className="hidden sm:flex items-center gap-1.5 text-gray-400">
-                        <Clock size={14} />
-                        <span className="text-[10px] font-bold uppercase tracking-tight">15 MINS</span>
-                      </div>
+                      
                     </div>
 
                     {isOwner && (
