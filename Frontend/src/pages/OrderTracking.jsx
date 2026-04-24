@@ -24,6 +24,9 @@ import {
   setCurrentOrderError,
   updateOrder,
 } from "../features/orderSlice";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import { renderToStaticMarkup } from "react-dom/server";
 
 const TIMELINE_STEPS = [
   {
@@ -91,6 +94,35 @@ const OrderTracking = () => {
   const [rating, setRating] = useState({ restaurant: 0, driver: 0 });
   const [submitting, setSubmitting] = useState(false);
   const [isRated, setIsRated] = useState(false);
+  const [driverLocation, setDriverLocation] = useState(null);
+
+  const createIcon = (icon, color) => {
+    const iconMarkup = renderToStaticMarkup(
+      <div style={{ color: color, backgroundColor: 'white', padding: '8px', borderRadius: '50%', boxShadow: '0 4px 10px rgba(0,0,0,0.2)', border: `2px solid ${color}` }}>
+        {icon}
+      </div>
+    );
+    return L.divIcon({
+      html: iconMarkup,
+      className: "custom-leaflet-icon",
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+    });
+  };
+
+  const restaurantIcon = createIcon(<Store size={20} />, "#F97316");
+  const customerIcon = createIcon(<Home size={20} />, "#1E293B");
+  const driverIcon = createIcon(<Truck size={20} />, "#F97316");
+
+  const RecenterMap = ({ location }) => {
+    const map = useMap();
+    useEffect(() => {
+      if (location) {
+        map.setView([location.lat, location.lng], map.getZoom());
+      }
+    }, [location, map]);
+    return null;
+  };
 
   const fetchOrder = async (showLoader = true) => {
     try {
@@ -116,8 +148,14 @@ const OrderTracking = () => {
       dispatch(setCurrentOrder(updatedOrder));
     });
 
+    socket.on("driver_location_updated", (data) => {
+      console.log("Driver location updated:", data.location);
+      setDriverLocation(data.location);
+    });
+
     return () => {
       socket.off("order_updated");
+      socket.off("driver_location_updated");
     };
   }, [orderId, dispatch]);
 
@@ -319,13 +357,64 @@ const OrderTracking = () => {
         </div>
 
         <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="relative rounded-3xl overflow-hidden min-h-[300px] shadow-inner group">
-            <img
-              src="/map_bg.png"
-              alt="Map"
-              className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
-            />
-            <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-4 animate-in slide-in-from-bottom-4 duration-700">
+          <div className="relative rounded-3xl overflow-hidden min-h-[400px] shadow-inner group border border-gray-100">
+            {order.status === "OUT_FOR_DELIVERY" || order.status === "DELIVERED" || order.status === "READY_FOR_PICKUP" ? (
+              //restaurant mark
+              <MapContainer
+                center={
+                  driverLocation || 
+                  (order.restaurant?.address?.location?.coordinates?.length === 2 
+                    ? { lat: order.restaurant.address.location.coordinates[1], lng: order.restaurant.address.location.coordinates[0] }
+                    : [21.1702, 72.8311]) 
+                }
+                zoom={15}
+                style={{ height: "100%", width: "100%" }}
+                zoomControl={false}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                
+                {order.restaurant?.address?.location?.coordinates?.length === 2 && (
+                  <Marker 
+                    position={[order.restaurant.address.location.coordinates[1], order.restaurant.address.location.coordinates[0]]} 
+                    icon={restaurantIcon}
+                  >
+                    <Popup>Restaurant: {order.restaurant.name}</Popup>
+                  </Marker>
+                )}
+
+                {driverLocation && (
+                  <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
+                    <Popup>Driver is here</Popup>
+                  </Marker>
+                )}
+
+          
+                <Marker 
+                  position={
+                    order.restaurant?.address?.location?.coordinates?.length === 2
+                      ? [order.restaurant.address.location.coordinates[1] + 0.01, order.restaurant.address.location.coordinates[0] + 0.01]
+                      : [21.1802, 72.8411]
+                  } 
+                  icon={customerIcon}
+                >
+                  <Popup>Your Location</Popup>
+                </Marker>
+
+                {driverLocation && <RecenterMap location={driverLocation} />}
+              </MapContainer>
+            ) : (
+              <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 p-8 text-center">
+                <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mb-4">
+                  <Clock size={40} className="text-gray-200" />
+                </div>
+                <p className="font-bold uppercase tracking-widest text-xs">Map will be available once driver picks up your order</p>
+              </div>
+            )}
+
+            <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white flex items-center gap-4 z-[1000]">
               <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF7ED] rounded-xl flex items-center justify-center text-orange-500 border border-[#FFEDD5] flex-shrink-0">
                 <MapPin size={20} className="md:size-[24px]" />
               </div>

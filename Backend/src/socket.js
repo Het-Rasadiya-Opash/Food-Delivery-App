@@ -29,6 +29,11 @@ export const initSocket = (server) => {
       console.log("Driver joined drivers room");
     });
 
+    socket.on("update_driver_location", ({ orderId, location }) => {
+      io.to(`order_${orderId}`).emit("driver_location_updated", { orderId, location });
+      console.log(`Driver updated location for order ${orderId}:`, location);
+    });
+
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
     });
