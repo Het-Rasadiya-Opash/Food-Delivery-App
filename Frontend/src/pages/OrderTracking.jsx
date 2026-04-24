@@ -442,26 +442,36 @@ const OrderTracking = () => {
               <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF7ED] rounded-xl flex items-center justify-center text-orange-500 border border-[#FFEDD5] flex-shrink-0">
                 <MapPin size={20} className="md:size-[24px]" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1  min-w-0">
                 {order.status === "OUT_FOR_DELIVERY" ||
                 order.status === "DELIVERED" ? (
-                  <div className="flex flex-col">
-                    <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] truncate flex items-center gap-2">
-                      {order.driver?.username} is your courier
-                    </p>
-                    {order.driver?.rating > 0 && (
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <div className="flex items-center gap-0.5 text-orange-500">
-                          <Star size={12} fill="currentColor" />
-                          <span className="text-[11px] font-black text-gray-700">
-                            {order.driver.rating.toFixed(1)}
+                  <div className="flex justify-between">
+                    <div className="flex flex-col">
+                      <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] truncate flex items-center gap-2">
+                        {order.driver?.username} is your courier
+                      </p>
+                      {order.driver?.rating > 0 && (
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="flex items-center gap-0.5 text-orange-500">
+                            <Star size={12} fill="currentColor" />
+                            <span className="text-[11px] font-black text-gray-700">
+                              {order.driver.rating.toFixed(1)}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-bold text-gray-400">
+                            ({order.driver.totalRatings || 0} reviews)
                           </span>
                         </div>
-                        <span className="text-[10px] font-bold text-gray-400">
-                          ({order.driver.totalRatings || 0} reviews)
-                        </span>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="bg-orange-50 rounded-full p-1 text-orange-600 font-semibold">
+                        +91 12345 67890
+                      </p>
+                      <button className="px-4 md:px-5 py-2 bg-orange-500 text-white rounded-xl text-[10px] md:text-xs font-black hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 active:scale-95 flex-shrink-0">
+                        Call
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <p className="text-[12px] md:text-[13px] font-black text-[#1E293B]">
@@ -469,9 +479,6 @@ const OrderTracking = () => {
                   </p>
                 )}
               </div>
-              <button className="px-4 md:px-5 py-2 bg-orange-500 text-white rounded-xl text-[10px] md:text-xs font-black hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20 active:scale-95 flex-shrink-0">
-                Call
-              </button>
             </div>
           </div>
 
