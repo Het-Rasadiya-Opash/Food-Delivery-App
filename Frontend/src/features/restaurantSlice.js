@@ -39,6 +39,11 @@ const restaurantSlice = createSlice({
       state.error = null;
       state.loading = false;
     },
+    removeRestaurant: (state, action) => {
+      state.restaurants = state.restaurants.filter(
+        (r) => r._id !== action.payload,
+      );
+    },
   },
 });
 
@@ -49,6 +54,7 @@ export const {
   setRestaurantLoading,
   setRestaurantError,
   clearRestaurant,
+  removeRestaurant,
 } = restaurantSlice.actions;
 
 export default restaurantSlice.reducer;

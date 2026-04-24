@@ -3,10 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   clearRestaurant,
+  removeRestaurant,
   setRestaurant,
   setRestaurantError,
   setRestaurantLoading,
 } from "../features/restaurantSlice";
+import {
+  clearMenuItems,
+  setMenuItems,
+  setMenuItemError,
+  setMenuItemLoading,
+} from "../features/menuItemSlice";
 import apiRequest from "../utils/apiRequest";
 import {
   MapPin,
@@ -49,6 +56,8 @@ const OwnerRestaurant = () => {
     try {
       await apiRequest.delete(`/restaurants/${restaurantId}`);
       dispatch(clearRestaurant());
+      dispatch(removeRestaurant(restaurantId));
+      dispatch(clearMenuItems());
       navigate("/profile");
     } catch (err) {
       dispatch(setRestaurantError("Failed to delete restaurant"));

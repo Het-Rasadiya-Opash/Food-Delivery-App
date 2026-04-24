@@ -1,4 +1,5 @@
 import restaurantModel from "../models/restaurant.model.js";
+import menuItemModel from "../models/MenuItem.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -72,7 +73,7 @@ export const getRestaurantById = asyncHandler(async (req, res) => {
 export const getOwnerRestaurant = asyncHandler(async (req, res) => {
   const ownerId = req.user._id;
   const ownerRestaurant = await restaurantModel.findOne({ owner: ownerId });
- 
+
   return res
     .status(200)
     .json(
@@ -133,6 +134,8 @@ export const deleteRestaurant = asyncHandler(async (req, res) => {
   if (restaurant.owner.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not authorized to delete this restaurant");
   }
+
+  await menuItemModel.deleteMany({ restaurant: restaurantId });
 
   await restaurant.deleteOne();
 

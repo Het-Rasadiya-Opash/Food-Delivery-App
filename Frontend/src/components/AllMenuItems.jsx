@@ -37,7 +37,10 @@ const AllMenuItems = () => {
 
 
   useEffect(() => {
-    if (!restaurantId) return;
+    if (!restaurantId) {
+      dispatch(clearMenuItems());
+      return;
+    }
     const fetchAllMenus = async () => {
       try {
         dispatch(clearMenuItems());

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteAccount,
   getMe,
   login,
   logout,
@@ -12,5 +13,6 @@ router.get("/", authMiddleware, getMe);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", authMiddleware, logout);
+router.delete("/delete-account", authMiddleware, deleteAccount);
 
 export default router;

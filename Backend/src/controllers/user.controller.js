@@ -1,4 +1,6 @@
 import userModel from "../models/user.model.js";
+import restaurantModel from "../models/restaurant.model.js";
+import menuItemModel from "../models/MenuItem.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -82,4 +84,35 @@ export const getMe = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User fetch Successfully"));
+});
+
+export const deleteAccount = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const user = await userModel.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (user.role === "Restaurant Manager") {
+    const restaurant = await restaurantModel.findOne({ owner: userId });
+    if (restaurant) {
+      await menuItemModel.deleteMany({ restaurant: restaurant._id });
+      await restaurant.deleteOne();
+    }
+  }
+
+  await user.deleteOne();
+
+  res.clearCookie("token");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        null,
+        "User account and associated data deleted successfully",
+      ),
+    );
 });
