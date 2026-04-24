@@ -267,8 +267,6 @@ const OrderTracking = () => {
     return statusMap[order.status] || order.status;
   };
 
-  console.log(order);
-
   return (
     <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-0 sm:p-4 md:p-8 font-sans">
       <div className="w-full max-w-5xl bg-white sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20 min-h-screen sm:min-h-0">
@@ -491,45 +489,83 @@ const OrderTracking = () => {
             <h3 className="text-lg md:text-xl font-black text-[#1E293B] mb-6">
               Order Summary
             </h3>
-            <div className="flex-1 space-y-4 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="flex-1 space-y-5 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {order.items.map((item) => (
                 <div
                   key={item.menuItemId}
-                  className="flex justify-between items-center group"
+                  className="flex justify-between items-center group p-2 rounded-2xl hover:bg-white hover:shadow-sm transition-all duration-300 border border-transparent hover:border-gray-100"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-[11px] font-black text-orange-500 flex-shrink-0">
-                      {item.quantity}x
-                    </span>
-                    <p className="text-[12px] md:text-[13px] font-bold text-gray-600 group-hover:text-[#1E293B] transition-colors line-clamp-1">
-                      {item.name}
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm group-hover:shadow-md transition-all duration-300">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop";
+                          }}
+                        />
+                      </div>
+                      <div className="absolute -top-1.5 -right-1.5 z-10">
+                        <span className="flex items-center justify-center w-6 h-6 bg-orange-500 text-white text-[10px] font-black rounded-xl shadow-lg border-2 border-white">
+                          {item.quantity}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-[13px] md:text-[14px] font-black text-[#1E293B] group-hover:text-orange-600 transition-colors truncate">
+                        {item.name}
+                      </p>
+                      <p className="text-[11px] font-bold text-gray-400 mt-0.5">
+                        ₹{item.price.toFixed(2)} per unit
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0 ml-4">
+                    <p className="text-[14px] font-black text-[#1E293B]">
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
-                  <p className="text-[12px] md:text-[13px] font-black text-[#1E293B] flex-shrink-0 ml-4">
-                    ₹{(item.price * item.quantity).toFixed(2)}
-                  </p>
                 </div>
               ))}
-              <div className="flex justify-between items-center py-4 border-t border-dashed border-gray-200">
-                <p className="text-[12px] md:text-[13px] font-bold text-gray-400">
-                  Delivery Fee
-                </p>
-                <p className="text-[12px] md:text-[13px] font-black text-orange-500 uppercase tracking-widest">
-                  FREE
-                </p>
-              </div>
-            </div>
-            <div className="pt-6 border-t border-gray-200 mt-auto">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-                <div>
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">
-                    TOTAL AMOUNT
+
+              <div className="mt-6 space-y-3 pt-6 border-t border-dashed border-gray-200">
+                <div className="flex justify-between items-center">
+                  <p className="text-[12px] font-bold text-gray-400">
+                    Subtotal
                   </p>
-                  <p className="text-3xl md:text-4xl font-black text-[#1E293B]">
+                  <p className="text-[12px] font-bold text-[#1E293B]">
                     ₹{order.totalPrice.toFixed(2)}
                   </p>
                 </div>
-                
+                <div className="flex justify-between items-center">
+                  <p className="text-[12px] font-bold text-gray-400">
+                    Delivery Fee
+                  </p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] line-through text-gray-300 font-bold">
+                      ₹40.00
+                    </span>
+                    <span className="text-[11px] font-black text-green-700 uppercase tracking-wider bg-green-50 px-2 py-0.5 rounded-full">
+                      FREE
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-gray-200 mt-auto">
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">
+                    TOTAL PAYABLE
+                  </p>
+                  <p className="text-3xl md:text-4xl font-black text-[#1E293B] tracking-tight">
+                    ₹{order.totalPrice.toFixed(2)}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
