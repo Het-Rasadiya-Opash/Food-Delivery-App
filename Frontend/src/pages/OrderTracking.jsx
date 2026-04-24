@@ -267,6 +267,8 @@ const OrderTracking = () => {
     return statusMap[order.status] || order.status;
   };
 
+  console.log(order);
+
   return (
     <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-0 sm:p-4 md:p-8 font-sans">
       <div className="w-full max-w-5xl bg-white sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden relative border border-white/20 min-h-screen sm:min-h-0">
@@ -409,19 +411,16 @@ const OrderTracking = () => {
                     position={[driverLocation.lat, driverLocation.lng]}
                     icon={driverIcon}
                   >
-                    <Popup>Driver is here</Popup>
+                    <Popup>{order.driver.username} is here</Popup>
                   </Marker>
                 )}
 
                 <Marker
                   position={
-                    order.restaurant?.address?.location?.coordinates?.length ===
-                    2
+                    order.user?.address?.location?.coordinates?.length === 2
                       ? [
-                          order.restaurant.address.location.coordinates[1] +
-                            0.01,
-                          order.restaurant.address.location.coordinates[0] +
-                            0.01,
+                          order.user.address.location.coordinates[1],
+                          order.user.address.location.coordinates[0],
                         ]
                       : [21.1802, 72.8411]
                   }
@@ -530,12 +529,7 @@ const OrderTracking = () => {
                     ₹{order.totalPrice.toFixed(2)}
                   </p>
                 </div>
-                <div className="px-3 py-1.5 bg-white border border-gray-100 rounded-xl shadow-sm flex items-center gap-2">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full" />
-                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                    Paid via Visa
-                  </span>
-                </div>
+                
               </div>
             </div>
           </div>

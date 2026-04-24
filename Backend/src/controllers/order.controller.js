@@ -87,12 +87,18 @@ export const getOrderById = asyncHandler(async (req, res) => {
 
   const order = await orderModel
     .findById(orderId)
-    .populate("restaurant", "name images address")
+    .populate("restaurant", "name images address owner")
+    .populate("user", "username address")
     .populate("driver", "username rating totalRatings");
 
   if (!order) throw new ApiError(404, "Order not found");
 
-  if (order.user.toString() !== req.user._id.toString()) {
+  const isCustomer = order.user._id.toString() === req.user._id.toString();
+  const isDriver = order.driver?._id.toString() === req.user._id.toString();
+  const isRestaurantOwner =
+    order.restaurant?.owner?.toString() === req.user._id.toString();
+
+  if (!isCustomer && !isDriver && !isRestaurantOwner) {
     throw new ApiError(403, "Not authorized to view this order");
   }
 
@@ -124,6 +130,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   const updatedOrder = await orderModel
     .findById(orderId)
     .populate("restaurant", "name images address")
+    .populate("user", "username address")
     .populate("driver", "username rating totalRatings");
 
   emitOrderUpdate(orderId, updatedOrder);
@@ -170,6 +177,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   const updatedOrder = await orderModel
     .findById(orderId)
     .populate("restaurant", "name images address")
+    .populate("user", "username address")
     .populate("driver", "username rating totalRatings");
 
   emitOrderUpdate(orderId, updatedOrder);
@@ -248,6 +256,7 @@ export const claimOrder = asyncHandler(async (req, res) => {
   const updatedOrder = await orderModel
     .findById(orderId)
     .populate("restaurant", "name images address")
+    .populate("user", "username address")
     .populate("driver", "username rating totalRatings");
 
   emitOrderUpdate(orderId, updatedOrder);
@@ -290,6 +299,7 @@ export const updateDriverStatus = asyncHandler(async (req, res) => {
   const updatedOrder = await orderModel
     .findById(orderId)
     .populate("restaurant", "name images address")
+    .populate("user", "username address")
     .populate("driver", "username rating totalRatings");
 
   emitOrderUpdate(orderId, updatedOrder);
