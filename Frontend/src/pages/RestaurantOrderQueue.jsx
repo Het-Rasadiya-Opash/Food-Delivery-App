@@ -394,7 +394,7 @@ const RestaurantOrderQueue = () => {
                           onClick={() =>
                             handleUpdateStatus(order._id, "READY_FOR_PICKUP")
                           }
-                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors shadow-lg shadow-orange-600/20"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-colors shadow-lg shadow-orange-600/20"
                         >
                           <ShoppingBag size={18} /> Ready for Pickup
                         </button>

@@ -139,7 +139,7 @@ const MyOrders = () => {
             </p>
             <button
               onClick={() => navigate("/")}
-              className="px-6 py-2.5 bg-orange-600 text-white font-medium rounded-xl hover:bg-orange-700 transition shadow-sm inline-flex items-center gap-2 group"
+              className="px-6 py-2.5 bg-orange-500 text-white font-medium rounded-xl hover:bg-orange-600 transition shadow-sm inline-flex items-center gap-2 group"
             >
               Start Ordering
               <ChevronRight

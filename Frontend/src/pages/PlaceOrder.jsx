@@ -75,7 +75,7 @@ const PlaceOrder = () => {
         <p className="text-2xl font-bold text-gray-800">Your cart is empty</p>
         <button
           onClick={() => navigate("/")}
-          className="mt-2 px-6 py-2.5 bg-orange-600 text-white rounded-xl font-medium hover:bg-orange-700 transition shadow-sm"
+          className="mt-2 px-6 py-2.5 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition shadow-sm"
         >
           Browse Restaurants
         </button>
@@ -232,7 +232,7 @@ const PlaceOrder = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 group disabled:opacity-70"
+                className="w-full py-3.5 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 group disabled:opacity-70"
               >
                 {loading ? (
                   <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
