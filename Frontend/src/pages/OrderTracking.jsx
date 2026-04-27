@@ -356,90 +356,83 @@ const OrderTracking = () => {
         </div>
 
         <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="relative rounded-3xl overflow-hidden min-h-[400px] shadow-inner group border border-gray-100">
-            {order.status === "OUT_FOR_DELIVERY" ||
-            order.status === "DELIVERED" ? (
-              //restaurant mark
-              <MapContainer
-                center={
-                  driverLocation ||
-                  (order.restaurant?.address?.location?.coordinates?.length ===
-                  2
-                    ? {
-                        lat: order.restaurant.address.location.coordinates[1],
-                        lng: order.restaurant.address.location.coordinates[0],
-                      }
-                    : [21.1702, 72.8311])
-                }
-                zoom={15}
-                style={{ height: "100%", width: "100%" }}
-                zoomControl={false}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-
-                {order.restaurant?.address?.location?.coordinates?.length ===
-                  2 && (
-                  <Marker
-                    position={[
-                      order.restaurant.address.location.coordinates[1],
-                      order.restaurant.address.location.coordinates[0],
-                    ]}
-                    icon={restaurantIcon}
-                  >
-                    <Popup>Restaurant: {order.restaurant.name}</Popup>
-                  </Marker>
-                )}
-
-                {driverLocation && (
-                  <Marker
-                    position={[driverLocation.lat, driverLocation.lng]}
-                    icon={driverIcon}
-                  >
-                    <Popup>{order.driver.username} is here</Popup>
-                  </Marker>
-                )}
-
-                <Marker
-                  position={
-                    order.user?.address?.location?.coordinates?.length === 2
-                      ? [
-                          order.user.address.location.coordinates[1],
-                          order.user.address.location.coordinates[0],
-                        ]
-                      : [21.1802, 72.8411]
+          <div className="flex flex-col gap-6">
+            <div className="relative rounded-3xl overflow-hidden h-[400px] shadow-inner group border border-gray-100">
+              {order.status === "OUT_FOR_DELIVERY" ||
+              order.status === "DELIVERED" ? (
+                //restaurant mark
+                <MapContainer
+                  center={
+                    driverLocation ||
+                    (order.restaurant?.address?.location?.coordinates
+                      ?.length === 2
+                      ? {
+                          lat: order.restaurant.address.location.coordinates[1],
+                          lng: order.restaurant.address.location.coordinates[0],
+                        }
+                      : [21.1702, 72.8311])
                   }
-                  icon={customerIcon}
+                  zoom={15}
+                  style={{ height: "100%", width: "100%" }}
+                  zoomControl={false}
                 >
-                  <Popup>Your Location</Popup>
-                </Marker>
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
 
-                {driverLocation && <RecenterMap location={driverLocation} />}
-              </MapContainer>
-            ) : (
-              <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 p-8 text-center animate-in fade-in duration-500">
-                <div className="relative mb-6">
-                  <div className="w-24 h-24 bg-white rounded-full shadow-sm flex items-center justify-center relative z-10">
-                    <Truck size={48} className="text-orange-200" />
+                  {order.restaurant?.address?.location?.coordinates?.length ===
+                    2 && (
+                    <Marker
+                      position={[
+                        order.restaurant.address.location.coordinates[1],
+                        order.restaurant.address.location.coordinates[0],
+                      ]}
+                      icon={restaurantIcon}
+                    >
+                      <Popup>Restaurant: {order.restaurant.name}</Popup>
+                    </Marker>
+                  )}
+
+                  {driverLocation && (
+                    <Marker
+                      position={[driverLocation.lat, driverLocation.lng]}
+                      icon={driverIcon}
+                    >
+                      <Popup>{order.driver.username} is here</Popup>
+                    </Marker>
+                  )}
+
+                  <Marker
+                    position={
+                      order.user?.address?.location?.coordinates?.length === 2
+                        ? [
+                            order.user.address.location.coordinates[1],
+                            order.user.address.location.coordinates[0],
+                          ]
+                        : [21.1802, 72.8411]
+                    }
+                    icon={customerIcon}
+                  >
+                    <Popup>Your Location</Popup>
+                  </Marker>
+
+                  {driverLocation && <RecenterMap location={driverLocation} />}
+                </MapContainer>
+              ) : (
+                <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-gray-400 p-8 text-center animate-in fade-in duration-500">
+                  <div className="relative">
+                    <div className="w-24 h-24 bg-white rounded-full shadow-sm flex items-center justify-center relative z-10">
+                      <Truck size={48} className="text-orange-200" />
+                    </div>
+
+                    <div className="absolute inset-0 bg-orange-100 rounded-full animate-ping scale-75 opacity-20" />
                   </div>
-                  <div className="absolute inset-0 bg-orange-100 rounded-full animate-ping scale-75 opacity-20" />
                 </div>
-                <h4 className="text-gray-900 font-black text-lg mb-2">
-                  {order.status === "READY_FOR_PICKUP" && order.driver
-                    ? "Driver is at the Restaurant"
-                    : "Preparing your Order"}
-                </h4>
-                <p className="text-gray-500 text-sm max-w-[240px] mx-auto font-medium">
-                  {order.status === "READY_FOR_PICKUP" && order.driver
-                    ? "Your courier is collecting your food. Live tracking will start once they're on the way!"
-                    : "The restaurant is preparing your food. We'll show you the live map once it's picked up."}
-                </p>
-              </div>
-            )}
+              )}
+            </div>
 
-            <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-white/95 backdrop-blur-md rounded-[2rem] p-5 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 flex items-center gap-5 z-[1000] animate-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-white rounded-[2rem] p-5 md:p-6 shadow-[0_15px_35px_rgba(0,0,0,0.05)] border border-gray-100 flex items-center gap-5 animate-in slide-in-from-bottom-4 duration-500">
               <div className="w-12 h-12 md:w-14 md:h-14 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-500/20 flex-shrink-0">
                 <Truck size={24} className="md:size-[28px]" />
               </div>
@@ -453,7 +446,11 @@ const OrderTracking = () => {
                       </h4>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex items-center gap-1 bg-orange-50 px-2 py-0.5 rounded-lg border border-orange-100">
-                          <Star size={12} className="text-orange-500" fill="currentColor" />
+                          <Star
+                            size={12}
+                            className="text-orange-500"
+                            fill="currentColor"
+                          />
                           <span className="text-[11px] font-black text-orange-700">
                             {(order.driver?.rating || 4.8).toFixed(1)}
                           </span>
@@ -476,10 +473,14 @@ const OrderTracking = () => {
                 ) : (
                   <div className="flex flex-col">
                     <h4 className="text-[14px] md:text-[16px] font-black text-[#1E293B]">
-                      Preparing your Order
+                      {order.status === "READY_FOR_PICKUP" && order.driver
+                        ? "Driver is at the Restaurant"
+                        : "Preparing your Order"}
                     </h4>
                     <p className="text-[11px] md:text-[12px] font-bold text-gray-400 mt-0.5">
-                      The restaurant is busy preparing your delicious meal.
+                      {order.status === "READY_FOR_PICKUP" && order.driver
+                        ? "Your courier is collecting your food. Live tracking will start once they're on the way!"
+                        : "The restaurant is busy preparing your delicious meal."}
                     </p>
                   </div>
                 )}

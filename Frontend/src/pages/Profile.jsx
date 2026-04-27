@@ -128,10 +128,6 @@ const Profile = () => {
             <AllMenuItems />
           </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <RestaurantAnalytics />
-          </div>
-
           {/* <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden p-6">
             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
               <ListOrdered className="text-orange-500" /> Active Orders

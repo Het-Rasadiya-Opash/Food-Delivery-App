@@ -257,8 +257,6 @@ export const getRestaurantOrders = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, orders, "Fetch Orders successfully"));
 });
 
-
-
 //Driver
 
 export const getAvailableOrders = asyncHandler(async (req, res) => {
@@ -337,6 +335,9 @@ export const updateDriverStatus = asyncHandler(async (req, res) => {
 
   order.status = status;
   order.statusHistory.push({ status });
+  if (order.status === "DELIVERED") {
+    order.isPaid = true;
+  }
   await order.save();
 
   if (status === "DELIVERED") {

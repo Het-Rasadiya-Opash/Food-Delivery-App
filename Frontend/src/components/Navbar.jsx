@@ -18,6 +18,7 @@ import {
   UtensilsCrossed,
   LogIn,
   UserPlus,
+  ChartNoAxesCombined,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -145,6 +146,17 @@ const Navbar = () => {
                       <ListOrdered size={18} />
                       My Orders
                     </Link>
+
+                    {currentUser.role === "Restaurant Manager" && (
+                      <Link
+                        to="/restaurant/analytics"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors"
+                        onClick={() => setOpen(false)}
+                      >
+                        <ChartNoAxesCombined size={18} />
+                        Analytics
+                      </Link>
+                    )}
 
                     {currentUser?.role === "Restaurant Manager" && (
                       <Link

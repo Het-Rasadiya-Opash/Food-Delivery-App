@@ -23,6 +23,7 @@ import DriverDashboard from "./pages/DriverDashboard";
 import CategoryResults from "./pages/CategoryResults";
 import Footer from "./components/Footer";
 import { ShoppingBag } from "lucide-react";
+import RestaurantAnalytics from "./components/RestaurantAnalytics";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -97,6 +98,11 @@ const App = () => {
               element={<RestaurantOrderQueue />}
             />
             <Route path="/driver/dashboard" element={<DriverDashboard />} />
+
+            <Route
+              path="/restaurant/analytics"
+              element={<RestaurantAnalytics />}
+            />
           </Route>
         </Routes>
       </main>
