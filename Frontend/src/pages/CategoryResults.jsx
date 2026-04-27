@@ -90,7 +90,7 @@ const CategoryResults = () => {
             </p>
             <button
               onClick={() => navigate("/")}
-              className="px-8 py-3 bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:bg-orange-700 transition-all active:scale-95"
+              className="px-8 py-3 bg-orange-500 text-white rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:bg-orange-600 transition-all active:scale-95"
             >
               Explore Other Categories
             </button>

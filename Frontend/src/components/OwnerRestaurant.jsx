@@ -159,7 +159,7 @@ const OwnerRestaurant = () => {
 
           <button
             onClick={() => navigate(`/add-new-menuItem/${restaurant._id}`)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-orange-600 text-white rounded-xl font-bold hover:bg-orange-700 transition-colors shadow-sm shadow-orange-500/20"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-sm shadow-orange-500/20"
           >
             <PlusCircle size={16} /> Add Menu Item
           </button>

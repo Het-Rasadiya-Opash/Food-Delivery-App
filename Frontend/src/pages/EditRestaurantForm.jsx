@@ -277,7 +277,7 @@ const EditRestaurantForm = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-2/3 py-3.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 disabled:opacity-70"
+              className="w-2/3 py-3.5 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 disabled:opacity-70"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

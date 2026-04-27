@@ -25,7 +25,7 @@ const Home = () => {
                   <div className="rounded-md shadow">
                     <a
                       href="#restaurants"
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-orange-600 hover:bg-orange-700 hover:-translate-y-0.5 transition-all duration-300 md:py-4 md:text-lg md:px-10 shadow-lg shadow-orange-500/30"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-orange-500 hover:bg-orange-600 hover:-translate-y-0.5 transition-all duration-300 md:py-4 md:text-lg md:px-10 shadow-lg shadow-orange-500/30"
                     >
                       Order Now
                     </a>

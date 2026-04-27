@@ -489,7 +489,7 @@ const DriverDashboard = () => {
                           onClick={() =>
                             handleStatusUpdate(order._id, "OUT_FOR_DELIVERY")
                           }
-                          className="w-full flex items-center justify-center gap-2 py-4 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-2xl transition-all shadow-lg shadow-orange-600/20 active:scale-[0.98]"
+                          className="w-full flex items-center justify-center gap-2 py-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-2xl transition-all shadow-lg shadow-orange-600/20 active:scale-[0.98]"
                         >
                           <ShoppingBag size={20} /> Pick up from Restaurant
                         </button>

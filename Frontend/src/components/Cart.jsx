@@ -127,7 +127,7 @@ const Cart = ({ onClose }) => {
             navigate("/place-order");
             onClose?.();
           }}
-          className="w-full py-4 bg-orange-600 text-white font-extrabold rounded-2xl hover:bg-orange-700 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 group active:scale-[0.98]"
+          className="w-full py-4 bg-orange-500 text-white font-extrabold rounded-2xl hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 group active:scale-[0.98]"
         >
           Proceed to Checkout
           <ArrowRight
