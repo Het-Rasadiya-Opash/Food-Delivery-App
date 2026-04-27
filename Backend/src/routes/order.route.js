@@ -1,16 +1,16 @@
 import express from "express";
 import {
-  placeOrder,
+  cancelOrder,
+  claimOrder,
+  getAvailableOrders,
+  getMyDriverOrders,
   getMyOrders,
   getOrderById,
-  cancelOrder,
   getRestaurantOrders,
-  updateOrderStatus,
-  getAvailableOrders,
-  claimOrder,
-  updateDriverStatus,
-  getMyDriverOrders,
+  placeOrder,
   rateOrder,
+  updateDriverStatus,
+  updateOrderStatus
 } from "../controllers/order.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { authorizeRole } from "../middlewares/authRole.middleware.js";

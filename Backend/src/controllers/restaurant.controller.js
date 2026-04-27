@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import orderModel from "../models/order.model.js";
 
 export const createRestaurant = asyncHandler(async (req, res) => {
   const { name, address: addressRaw, isOpen, rating } = req.body;
@@ -142,4 +143,37 @@ export const deleteRestaurant = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Restaurant deleted successfully"));
+});
+
+export const restaurantAnalytics = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  const orderCount = await orderModel.aggregate([
+    {
+      $match: {
+        restaurant: restaurantId,
+        createdAt: { $gte: oneHourAgo },
+      },
+    },
+    {
+      $unwind: "$items",
+    },
+    {
+      $group: {
+        _id: "$items.menuItemId",
+        itemName: { $first: "$items.name" },
+        totalQuantity: { $sum: "$items.quantity" },
+      },
+    },
+    {
+      $sort: { totalQuantity: -1 },
+    },
+    {
+      $limit: 5,
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orderCount, "Fetch Order Counts"));
 });

@@ -10,15 +10,15 @@ import {
   clearMenuItems,
 } from "../features/menuItemSlice";
 import { addToCart } from "../features/cartSlice";
-import { 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  UtensilsCrossed, 
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  UtensilsCrossed,
   ShoppingBag,
   Info,
   ChevronRight,
-  Clock
+  Clock,
 } from "lucide-react";
 
 const AllMenuItems = () => {
@@ -35,7 +35,6 @@ const AllMenuItems = () => {
   const isOwner =
     currentUser?._id === (restaurant?.owner || selectedRestaurant?.owner);
 
-
   useEffect(() => {
     if (!restaurantId) {
       dispatch(clearMenuItems());
@@ -46,7 +45,6 @@ const AllMenuItems = () => {
         dispatch(clearMenuItems());
         dispatch(setMenuItemLoading(true));
         const res = await apiRequest.get(`/menuItems/${restaurantId}`);
-        console.log(res.data.data)
         dispatch(setMenuItems(res.data.data));
       } catch (err) {
         dispatch(
@@ -60,8 +58,6 @@ const AllMenuItems = () => {
     };
     fetchAllMenus();
   }, [dispatch, restaurantId]);
-
-  console.log(menuItems)
 
   const handleAddToCart = (item) => {
     dispatch(
@@ -109,7 +105,9 @@ const AllMenuItems = () => {
       <div className="flex flex-col items-center justify-center py-20 text-center px-4">
         <Info size={40} className="text-red-400 mb-4" />
         <p className="text-gray-900 font-bold text-lg mb-1">{error}</p>
-        <p className="text-gray-500 text-sm">Please refresh or try again later.</p>
+        <p className="text-gray-500 text-sm">
+          Please refresh or try again later.
+        </p>
       </div>
     );
   }
@@ -119,9 +117,11 @@ const AllMenuItems = () => {
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
         <UtensilsCrossed size={48} className="text-gray-200 mb-4" />
         <p className="text-gray-900 font-bold text-xl mb-2">Menu is empty</p>
-        <p className="text-gray-500 max-w-xs mb-8">This restaurant hasn't listed any items yet.</p>
+        <p className="text-gray-500 max-w-xs mb-8">
+          This restaurant hasn't listed any items yet.
+        </p>
         {isOwner && (
-          <button 
+          <button
             onClick={() => navigate(`/add-new-menuItem/${restaurantId}`)}
             className="px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-all active:scale-95"
           >
@@ -144,7 +144,9 @@ const AllMenuItems = () => {
       {Object.entries(grouped).map(([category, items]) => (
         <div key={category} className="space-y-8">
           <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">{category}</h2>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+              {category}
+            </h2>
             <div className="flex-1 h-[2px] bg-gray-50"></div>
           </div>
 
@@ -154,7 +156,6 @@ const AllMenuItems = () => {
                 key={item._id}
                 className="group flex bg-white rounded-3xl border border-gray-100 p-4 hover:border-orange-200 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 relative overflow-hidden"
               >
-                {/* Left: Image Container */}
                 <div className="relative w-32 h-32 sm:w-40 sm:h-40 shrink-0 rounded-2xl overflow-hidden">
                   <img
                     src={
@@ -173,7 +174,6 @@ const AllMenuItems = () => {
                   )}
                 </div>
 
-                {/* Right: Content Container */}
                 <div className="ml-4 sm:ml-6 flex-1 flex flex-col justify-between py-1">
                   <div>
                     <div className="flex justify-between items-start mb-1">
@@ -185,7 +185,8 @@ const AllMenuItems = () => {
                       </span>
                     </div>
                     <p className="text-gray-500 text-xs sm:text-sm line-clamp-2 leading-relaxed max-w-md">
-                      {item.description || "Freshly prepared with authentic ingredients and flavors."}
+                      {item.description ||
+                        "Freshly prepared with authentic ingredients and flavors."}
                     </p>
                   </div>
 
@@ -196,14 +197,17 @@ const AllMenuItems = () => {
                           onClick={() => handleAddToCart(item)}
                           className="flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-xl font-bold hover:bg-orange-500 hover:text-white transition-all active:scale-95 group/btn"
                         >
-                          <Plus size={18} className="group-hover/btn:rotate-90 transition-transform" />
+                          <Plus
+                            size={18}
+                            className="group-hover/btn:rotate-90 transition-transform"
+                          />
                           <span className="text-sm">Add</span>
                         </button>
                       ) : (
-                        <span className="text-xs font-bold text-gray-400 italic">Unavailable</span>
+                        <span className="text-xs font-bold text-gray-400 italic">
+                          Unavailable
+                        </span>
                       )}
-                      
-                      
                     </div>
 
                     {isOwner && (
@@ -227,7 +231,6 @@ const AllMenuItems = () => {
                   </div>
                 </div>
 
-                {/* Subtle Hover Element */}
                 <div className="absolute right-0 top-0 h-full w-1 bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
             ))}
