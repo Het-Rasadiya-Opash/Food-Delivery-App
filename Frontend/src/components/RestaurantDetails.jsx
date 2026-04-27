@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import apiRequest from "../utils/apiRequest";
-import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Clock, MapPin, Star, Store } from "lucide-react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  setSelectedRestaurant,
-  setRestaurantLoading,
   setRestaurantError,
+  setRestaurantLoading,
+  setSelectedRestaurant,
 } from "../features/restaurantSlice";
+import apiRequest from "../utils/apiRequest";
 import AllMenuItems from "./AllMenuItems";
-import { MapPin, Star, Clock, Store, ArrowLeft } from "lucide-react";
 
 const RestaurantDetails = () => {
   const { restaurantId } = useParams();

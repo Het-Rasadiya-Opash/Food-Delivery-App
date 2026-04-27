@@ -33,7 +33,6 @@ const App = () => {
       try {
         const response = await apiRequest.get("/users");
         const user = response.data.data;
-        // clear cart if it belongs to a different user
         const savedCart = JSON.parse(localStorage.getItem("cart") || "{}");
         if (savedCart.userId && savedCart.userId !== user._id) {
           dispatch(clearCart());
@@ -79,10 +78,7 @@ const App = () => {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/category/:categoryName"
-            element={<CategoryResults />}
-          />
+          <Route path="/category/:categoryName" element={<CategoryResults />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />

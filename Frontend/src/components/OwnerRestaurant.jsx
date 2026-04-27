@@ -31,6 +31,7 @@ const OwnerRestaurant = () => {
   const { restaurant, loading, error } = useSelector(
     (state) => state.restaurant,
   );
+  
   const navigate = useNavigate();
 
   useEffect(() => {

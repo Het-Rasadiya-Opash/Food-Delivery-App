@@ -12,6 +12,7 @@ import {
   Plus,
   ListOrdered,
 } from "lucide-react";
+import RestaurantAnalytics from "../components/RestaurantAnalytics";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.users);
@@ -125,6 +126,10 @@ const Profile = () => {
 
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <AllMenuItems />
+          </div>
+
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <RestaurantAnalytics />
           </div>
 
           {/* <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden p-6">
