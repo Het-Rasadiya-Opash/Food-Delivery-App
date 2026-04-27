@@ -86,7 +86,7 @@ const CategorySection = () => {
                   alt={category.category}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
+                <div className="absolute " />
               </div>
             </div>
             <h3 className="text-center font-semibold text-gray-800 group-hover:text-orange-600 transition-colors">
